@@ -351,7 +351,7 @@ namespace IISUtil
     {
         public static void SetASPNetVersion(DirectoryEntry siteDE, AspDotNetVersion newVersion)
         {
-            const string targetAspNetVersion = AspDotNetVersionConst.AspNetV4;
+            String targetAspNetVersion = AspDotNetVersionConst.VersionString(newVersion);
 
             //Need to initialize the script maps for the first time if not setup yet
             if (siteDE.Properties["ScriptMaps"].Count == 0)
