@@ -47,6 +47,20 @@ namespace IISUtil
 
     public class IISWMISite
     {
+        public static bool DeleteSite(IISIdentifier siteIdentifier)
+        {
+            String id = "";
+            //need to be sure that the site exists or else it can throw an error
+            if (IISWMIHelper.TryGetSiteID(siteIdentifier, ref id))
+            {
+                DirectoryEntry webServer = IISWMIHelper.GetIIsWebServer(id);
+                webServer.Invoke("Stop", null);
+                webServer.DeleteTree();
+                return true;
+            }
+            return false;
+        }
+
         public String SiteId { get; set; }
         public static IISWMISite CreateNewSite(String serverComment, String serverBindings, String filePath)
         {

@@ -32,94 +32,20 @@ namespace IISUtil
 
 
             Directory.CreateDirectory(path);
-
-            //DirectoryEntry w3svc = new DirectoryEntry("IIS://localhost/w3svc");
-            //object[] newSite = new object[] { serverComment, new object[] { serverBindings }, path };
-            //object siteId = (object)w3svc.Invoke("CreateNewSite", newSite);
             IISWMISite site = IISWMISite.CreateNewSite(serverComment, serverBindings, path);
-            
-
-            //DirectoryEntry webServer = new DirectoryEntry(String.Format("IIS://localhost/w3svc/{0}", siteId));
-            //webServer.Properties["SecureBindings"].Add(":443:zzz.cordonco.com");
-            //webServer.CommitChanges();
             site.SetBindings(serverBindings);
-
-            
-            //SetASPNetVersion(w3svc);
-            //DirectoryEntry virDir = new DirectoryEntry(String.Format("IIS://localhost/w3svc/{0}/root", site.SiteId));
-            //virDir.Properties["DefaultDoc"].Value = "index.aspx";
-            //virDir.Properties["AccessFlags"].Value = AccessFlags.AccessRead | AccessFlags.AccessExecute;
-            //virDir.Properties["AuthFlags"].Value = AuthFlags.AuthNTLM | AuthFlags.AuthAnonymous;
-            //virDir.Properties["AppPoolId"].Value = appPool;
-
             site.DefaultDoc = "index.aspx";
             site.AccessFlags = AccessFlags.AccessRead | AccessFlags.AccessExecute;
             site.AuthFlags = AuthFlags.AuthNTLM | AuthFlags.AuthAnonymous;
             site.AppPoolId = appPool;
-
-
-
-            //ScriptMapper.SetASPNetVersion(virDir, AspDotNetVersion.AspNetV4);
-            //virDir.CommitChanges();
-
             site.SetASPDotNetVersion(AspDotNetVersion.AspNetV4);
-
-
-            //webServer.Invoke("Start", null);
             site.Start();
         }
 
-
-
         private void button2_Click(object sender, EventArgs e)
         {
-            string siteId = string.Empty;
-
-            DirectoryEntry iis = new DirectoryEntry("IIS://localhost/W3SVC");
-
-            String id = "";
-
-            IISWMIHelper.TryGetSiteID(new IISServerCommentIdentifier("zzz"), ref id);
-
-            textBox1.Text += id + Environment.NewLine;
-            foreach (DirectoryEntry entry in iis.Children)
-            {
-                if (id.Equals("zzz", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    textBox1.Text += "DELETING -->" + entry.SchemaClassName + " " + entry.Name + Environment.NewLine;
-                }
-                else
-                {
-                    textBox1.Text += entry.SchemaClassName + " " + entry.Name + Environment.NewLine;
-                }
-            }
-
-
-
-            if (id != "")
-            {
-                DirectoryEntry webServer = new DirectoryEntry("IIS://localhost/W3SVC/" + id);
-                webServer.Invoke("Stop", null);
-
-                foreach (DirectoryEntry de in webServer.Children)
-                {
-                    textBox1.Text += de.Name + Environment.NewLine;
-                    
-                }
-                webServer.DeleteTree();
-                //DirectoryEntry virDir = new DirectoryEntry(String.Format("IIS://localhost/W3SVC/{0}/root", id));
-                //virDir.Invoke("AppDelete", null);
-            }
-        
-        
+            IISWMISite.DeleteSite(new IISServerCommentIdentifier("zzz"));
         }
-
-
-
-     
-
-
-
 
         private void Form1_Load(object sender, EventArgs e)
         {
