@@ -28,7 +28,7 @@ namespace IISUtil
             string serverComment = "zzz";
             string path = @"C:\Inetpub\zzz";
             string serverBindings = "https:*:80:zzz.cordonco.com;https::443:zzz.cordonco.com";
-            string appPool = (false) ? "DotNet4AppPool" : ".NET v4.5";
+            string appPool = "DotNet4AppPool";
 
 
             Directory.CreateDirectory(path);
@@ -46,15 +46,24 @@ namespace IISUtil
 
             
             //SetASPNetVersion(w3svc);
-            DirectoryEntry virDir = new DirectoryEntry(String.Format("IIS://localhost/w3svc/{0}/root", site.SiteId));
-            virDir.Properties["DefaultDoc"].Value = "index.aspx";
-            virDir.Properties["AccessFlags"].Value = AccessFlags.AccessRead | AccessFlags.AccessExecute;
+            //DirectoryEntry virDir = new DirectoryEntry(String.Format("IIS://localhost/w3svc/{0}/root", site.SiteId));
+            //virDir.Properties["DefaultDoc"].Value = "index.aspx";
+            //virDir.Properties["AccessFlags"].Value = AccessFlags.AccessRead | AccessFlags.AccessExecute;
+            //virDir.Properties["AuthFlags"].Value = AuthFlags.AuthNTLM | AuthFlags.AuthAnonymous;
+            //virDir.Properties["AppPoolId"].Value = appPool;
 
-            virDir.Properties["AuthFlags"].Value = AuthFlags.AuthNTLM | AuthFlags.AuthAnonymous;
+            site.DefaultDoc = "index.aspx";
+            site.AccessFlags = AccessFlags.AccessRead | AccessFlags.AccessExecute;
+            site.AuthFlags = AuthFlags.AuthNTLM | AuthFlags.AuthAnonymous;
+            site.AppPoolId = appPool;
 
-            virDir.Properties["AppPoolId"].Value = appPool;
-            ScriptMapper.SetASPNetVersion(virDir);
-            virDir.CommitChanges();
+
+
+            //ScriptMapper.SetASPNetVersion(virDir, AspDotNetVersion.AspNetV4);
+            //virDir.CommitChanges();
+
+            site.SetASPDotNetVersion(AspDotNetVersion.AspNetV4);
+
 
             //webServer.Invoke("Start", null);
             site.Start();

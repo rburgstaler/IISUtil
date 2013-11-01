@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.DirectoryServices;
+using System.Reflection;
 
 namespace IISUtil
 {
@@ -90,9 +91,75 @@ namespace IISUtil
 
         public void Start()
         {
-            //IISWMIHelper.GetIIsWebServer(SiteId).Invoke("Start", null);
+            IISWMIHelper.GetIIsWebServer(SiteId).Invoke("Start", null);
         }
 
+        private T GetVirtualDirPropertyDef<T>(String propertyName, T DefaultValue)
+        {
+                PropertyValueCollection pc = IISWMIHelper.GetIIsWebVirtualDir(SiteId).Properties["propertyName"];
+                return (pc != null) ? (T)Convert.ChangeType(pc.Value, typeof(T)) : DefaultValue;
+        }
+        private void SetVirtualDirProperty(String propertyName, object propertyValue)
+        {
+            DirectoryEntry virDir = IISWMIHelper.GetIIsWebVirtualDir(SiteId);
+            virDir.Properties[propertyName].Value = propertyValue;
+            virDir.CommitChanges();
+        }
+
+        public String DefaultDoc
+        {
+            get
+            {
+                return GetVirtualDirPropertyDef<String>("DefaultDoc", "");
+            }
+            set
+            {
+                SetVirtualDirProperty("DefaultDoc", value);
+            }
+        }
+
+        public String AppPoolId
+        {
+            get
+            {
+                return GetVirtualDirPropertyDef<String>("AppPoolId", "");
+            }
+            set
+            {
+                SetVirtualDirProperty("AppPoolId", value);
+            }
+        }
+
+        public Int32 AccessFlags
+        {
+            get
+            {
+                return GetVirtualDirPropertyDef<Int32>("AccessFlags", 0);
+            }
+            set
+            {
+                SetVirtualDirProperty("AccessFlags", value);
+            }
+        }
+
+        public Int32 AuthFlags
+        {
+            get
+            {
+                return GetVirtualDirPropertyDef<Int32>("AuthFlags", 0);
+            }
+            set
+            {
+                SetVirtualDirProperty("AuthFlags", value);
+            }
+        }
+
+        public void SetASPDotNetVersion(AspDotNetVersion version)
+        {
+            DirectoryEntry virDir = IISWMIHelper.GetIIsWebVirtualDir(SiteId);
+            ScriptMapper.SetASPNetVersion(virDir, version);
+            virDir.CommitChanges();
+        }
     }
 
     public delegate void IISBindingHandler(IISBinding iisBinding); 
@@ -248,19 +315,29 @@ namespace IISUtil
         public const int AuthPassport = 0x00000040;
     }
 
-    public static class AspDotNetVersion
+    public enum AspDotNetVersion
+    {
+        //These values MUST match the values in AspDotNetVersionConst.  This approach might be a bad programming practice
+        AspNetV1, AspNetV11, AspNetV2, AspNetV4
+    }
+    public static class AspDotNetVersionConst
     {
         public const string AspNetV1 = "1.0.3705";
         public const string AspNetV11 = "1.1.4322";
         public const string AspNetV2 = "2.0.50727";
         public const string AspNetV4 = "4.0.30319";
+        public static String VersionString(AspDotNetVersion version)
+        {
+            FieldInfo fi = typeof(AspDotNetVersionConst).GetField(version.ToString());
+            return (fi == null) ? "" : Convert.ToString(fi.GetValue(null));
+        }
     }
 
     public static class ScriptMapper
     {
-        public static void SetASPNetVersion(DirectoryEntry siteDE)
+        public static void SetASPNetVersion(DirectoryEntry siteDE, AspDotNetVersion newVersion)
         {
-            const string targetAspNetVersion = AspDotNetVersion.AspNetV4;
+            const string targetAspNetVersion = AspDotNetVersionConst.AspNetV4;
 
             //Need to initialize the script maps for the first time if not setup yet
             if (siteDE.Properties["ScriptMaps"].Count == 0)
@@ -273,10 +350,10 @@ namespace IISUtil
             for (int i = 0; i < siteDE.Properties["ScriptMaps"].Count; i++)
             {
                 //replace the versions if they exists
-                siteDE.Properties["ScriptMaps"][i] = siteDE.Properties["ScriptMaps"][i].ToString().Replace(AspDotNetVersion.AspNetV1, targetAspNetVersion);
-                siteDE.Properties["ScriptMaps"][i] = siteDE.Properties["ScriptMaps"][i].ToString().Replace(AspDotNetVersion.AspNetV11, targetAspNetVersion);
-                siteDE.Properties["ScriptMaps"][i] = siteDE.Properties["ScriptMaps"][i].ToString().Replace(AspDotNetVersion.AspNetV2, targetAspNetVersion);
-                siteDE.Properties["ScriptMaps"][i] = siteDE.Properties["ScriptMaps"][i].ToString().Replace(AspDotNetVersion.AspNetV4, targetAspNetVersion);
+                siteDE.Properties["ScriptMaps"][i] = siteDE.Properties["ScriptMaps"][i].ToString().Replace(AspDotNetVersionConst.AspNetV1, targetAspNetVersion);
+                siteDE.Properties["ScriptMaps"][i] = siteDE.Properties["ScriptMaps"][i].ToString().Replace(AspDotNetVersionConst.AspNetV11, targetAspNetVersion);
+                siteDE.Properties["ScriptMaps"][i] = siteDE.Properties["ScriptMaps"][i].ToString().Replace(AspDotNetVersionConst.AspNetV2, targetAspNetVersion);
+                siteDE.Properties["ScriptMaps"][i] = siteDE.Properties["ScriptMaps"][i].ToString().Replace(AspDotNetVersionConst.AspNetV4, targetAspNetVersion);
             }
 
             siteDE.CommitChanges();
