@@ -75,18 +75,58 @@ namespace IISUtil
     public static class AccessFlags
     {
         //http://msdn.microsoft.com/en-us/library/ms525016(v=vs.90).aspx
+        //A value of true indicates that the file or the contents of the folder may be executed, regardless of file type.
         public const int AccessExecute = 0x00000004;
+        //A value of true indicates that access to the physical path is not allowed.
+        public const int AccessNoPhysicalDir = 0x00008000;
+        //A value of true indicates that remote requests to execute applications are denied; only requests from the same 
+        //computer as the IIS server succeed if the AccessExecute property is set to true. You cannot set AccessNoRemoteExecute 
+        //to false to enable remote requests, and set AccessExecute to false to disable local requests.
+        public const int AccessNoRemoteExecute = 0x00002000;
+        //A value of true indicates that remote requests to view files are denied; only requests from the same computer as 
+        //the IIS server succeed if the AccessRead property is set to true. You cannot set AccessNoRemoteRead to false to 
+        //enable remote requests, and set AccessRead to false to disable local requests.
+        public const int AccessNoRemoteRead = 0x00001000;
+        //A value of true indicates that remote requests to view dynamic content are denied; only requests from the same 
+        //computer as the IIS server succeed if the AccessScript property is set to true. You cannot set AccessNoRemoteScript 
+        //to false to enable remote requests, and set AccessScript to false to disable local requests.
+        public const int AccessNoRemoteScript = 0x00004000;
+        //A value of true indicates that remote requests to create or change files are denied; only requests from the 
+        //same computer as the IIS server succeed if the AccessWrite property is set to true. You cannot set AccessNoRemoteWrite 
+        //to false to enable remote requests, and set AccessWrite to false to disable local requests.
+        public const int AccessNoRemoteWrite = 0x00000400;
+        //A value of true indicates that the file or the contents of the folder may be read through Microsoft Internet Explorer.
         public const int AccessRead = 0x00000001;
+        //A value of true indicates that the file or the contents of the folder may be executed if they are script files or 
+        //static content. A value of false only allows static files, such as HTML files, to be served.
         public const int AccessScript = 0x00000200;
+        //A value of true indicates that users are allowed to access source code if either Read or Write permissions are set. 
+        //Source code includes scripts in Microsoft ® Active Server Pages (ASP) applications.
+        public const int AccessSource = 0x00000010;
+        //A value of true indicates that users are allowed to upload files and their associated properties to the enabled 
+        //directory on your server or to change content in a Write-enabled file. Write can be implemented only with a browser 
+        //that supports the PUT feature of the HTTP 1.1 protocol standard.
+        public const int AccessWrite = 0x00000002;
     }
 
     public static class AuthFlags
     {
         //http://msdn.microsoft.com/en-us/library/ms524513(v=vs.90).aspx
-        //AuthFlags
-        public const int AuthNTLM = 0x00000004;
+
         //Specifies Anonymous authentication as one of the possible Windows authentication schemes returned to clients as being available.
         public const int AuthAnonymous = 0x00000001;
+        //Specifies Basic authentication as one of the possible Windows authentication schemes returned to clients as being available.
+        public const int AuthBasic = 0x00000002;
+        //Specifies Digest authentication and Advanced Digest authentication as one of the possible Windows authentication schemes 
+        //returned to clients as being available.
+        public const int AuthMD5 = 0x00000010;
+        //Specifies Integrated Windows authentication (formerly known as Challenge/Response or NTLM authentication) as one of 
+        //the possible Windows authentication schemes returned to clients as being available. Windows authentication schemes can 
+        //be configured via the NTAuthenticationProviders property.
+        public const int AuthNTLM = 0x00000004;
+        //A value of true indicates that Microsoft ® .NET Passport authentication is enabled. For more information, see .NET Passport 
+        //Authentication in the Help that comes with IIS Manager.
+        public const int AuthPassport = 0x00000040;
     }
 
     public static class AspDotNetVersion
