@@ -17,40 +17,48 @@ namespace IISUtil
 
         private void button1_Click(object sender, EventArgs e)
         {
-//            ServerManager sc;
-//            Site sit = sc.Sites[""];
-//            Microsoft.Web.Administration.Binding bnd = sit.Bindings[0];
-
+            /*
+            String si = "not found";
+            IISServerCommentIdentifier id = new IISServerCommentIdentifier("zzz");
+            IISWMIHelper.TryGetSiteID(id, ref si);
+            textBox1.Text += si + Environment.NewLine;
+            return;
+            */
+              
             string serverComment = "zzz";
             string path = @"C:\Inetpub\zzz";
+            string serverBindings = "https:*:80:zzz.cordonco.com;https::443:zzz.cordonco.com";
+            string appPool = (false) ? "DotNet4AppPool" : ".NET v4.5";
 
 
             Directory.CreateDirectory(path);
-            string serverBindings = ":80:zzz.cordonco.com";
-            DirectoryEntry w3svc = new DirectoryEntry("IIS://localhost/w3svc");
-            object[] newSite = new object[] { serverComment, new object[] { serverBindings }, path };
-            object siteId = (object)w3svc.Invoke("CreateNewSite", newSite);
 
+            //DirectoryEntry w3svc = new DirectoryEntry("IIS://localhost/w3svc");
+            //object[] newSite = new object[] { serverComment, new object[] { serverBindings }, path };
+            //object siteId = (object)w3svc.Invoke("CreateNewSite", newSite);
+            IISWMISite site = IISWMISite.CreateNewSite(serverComment, serverBindings, path);
+            
 
-            DirectoryEntry webServer = new DirectoryEntry(String.Format("IIS://localhost/w3svc/{0}", siteId));
-            webServer.Properties["SecureBindings"].Add(":443:zzz.cordonco.com");
-            webServer.CommitChanges();
+            //DirectoryEntry webServer = new DirectoryEntry(String.Format("IIS://localhost/w3svc/{0}", siteId));
+            //webServer.Properties["SecureBindings"].Add(":443:zzz.cordonco.com");
+            //webServer.CommitChanges();
+            site.SetBindings(serverBindings);
+
             
             //SetASPNetVersion(w3svc);
-            DirectoryEntry virDir = new DirectoryEntry(String.Format("IIS://localhost/w3svc/{0}/root", siteId));
+            DirectoryEntry virDir = new DirectoryEntry(String.Format("IIS://localhost/w3svc/{0}/root", site.SiteId));
             virDir.Properties["DefaultDoc"].Value = "index.aspx";
             virDir.Properties["AccessFlags"].Value = AccessFlags.AccessRead | AccessFlags.AccessExecute;
 
             virDir.Properties["AuthFlags"].Value = AuthFlags.AuthNTLM | AuthFlags.AuthAnonymous;
 
-            virDir.Properties["AppPoolId"].Value = "DotNet4AppPool";
+            virDir.Properties["AppPoolId"].Value = appPool;
             ScriptMapper.SetASPNetVersion(virDir);
             virDir.CommitChanges();
 
-            webServer.Invoke("Start", null);
+            //webServer.Invoke("Start", null);
+            site.Start();
         }
-
-        List<String> siteClass = new List<String>() { "IIsWebServer", "IIsFilters", "IIsWebVirtualDir", "IIsWebDirectory" };
 
 
 
@@ -62,7 +70,7 @@ namespace IISUtil
 
             String id = "";
 
-            IISWMIHelper.TryGetSiteID("zzz", ref id);
+            IISWMIHelper.TryGetSiteID(new IISServerCommentIdentifier("zzz"), ref id);
 
             textBox1.Text += id + Environment.NewLine;
             foreach (DirectoryEntry entry in iis.Children)

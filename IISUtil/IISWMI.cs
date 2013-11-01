@@ -11,14 +11,14 @@ namespace IISUtil
     //to the IIS configuration.
     public class IISWMIHelper
     {
-        public static bool TryGetSiteID(String Comment, ref String SiteId)
+        public static bool TryGetSiteID(IISIdentifier Identifier, ref String SiteId)
         {
-            DirectoryEntry iis = new DirectoryEntry("IIS://localhost/W3SVC");
+            DirectoryEntry iis = GetIIsWebService();
             foreach (DirectoryEntry entry in iis.Children)
             {
                 if (entry.SchemaClassName.Equals("iiswebserver", StringComparison.CurrentCultureIgnoreCase))
                 {
-                    if (entry.Properties["ServerComment"].Value.ToString().Equals(Comment, StringComparison.CurrentCultureIgnoreCase))
+                    if (entry.Properties["ServerComment"].Value.ToString().Equals(Identifier.Value, StringComparison.CurrentCultureIgnoreCase))
                     {
                         SiteId = entry.Name;
                         return true;
@@ -29,7 +29,126 @@ namespace IISUtil
             return false;
         }
 
+        public static DirectoryEntry GetIIsWebServer(String SiteId)
+        {
+            return new DirectoryEntry(String.Format("IIS://localhost/w3svc/{0}", SiteId));
+        }
+
+        public static DirectoryEntry GetIIsWebVirtualDir(String SiteId)
+        {
+            return new DirectoryEntry(String.Format("IIS://localhost/w3svc/{0}/root", SiteId));
+        }
+        public static DirectoryEntry GetIIsWebService()
+        {
+            return new DirectoryEntry(String.Format("IIS://localhost/w3svc"));
+        }
     }
+
+    public class IISWMISite
+    {
+        public String SiteId { get; set; }
+        public static IISWMISite CreateNewSite(String serverComment, String serverBindings, String filePath)
+        {
+            //Do not put any bindings in... we will do that after the site is create
+            object id = (object)IISWMIHelper.GetIIsWebService().Invoke("CreateNewSite", serverComment, new object[0], filePath);
+
+
+            return new IISWMISite()
+            {
+                SiteId = Convert.ToString(id)
+            };
+        }
+
+        //http::80:www.abcdefg.com
+        //https::443:www.abcdefg.com
+        public void SetBindings(String siteBindings)
+        {
+            DirectoryEntry webServer = new DirectoryEntry(String.Format("IIS://localhost/w3svc/{0}", SiteId));
+
+            //We need to parse the bindings string
+            webServer.Properties["ServerBindings"].Clear();
+            IISBindingParser.Parse(siteBindings,
+                delegate(IISBinding iisBinding)
+                {
+                    if (iisBinding.Protocol.Equals("http", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        webServer.Properties["ServerBindings"].Add(iisBinding.WMIBindString);
+                    }
+                });
+
+            webServer.Properties["SecureBindings"].Clear();
+            IISBindingParser.Parse(siteBindings,
+                delegate(IISBinding iisBinding)
+                {
+                    if (iisBinding.Protocol.Equals("https", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        webServer.Properties["SecureBindings"].Add(iisBinding.WMIBindString);
+                    }
+                });
+            webServer.CommitChanges();
+        }
+
+        public void Start()
+        {
+            //IISWMIHelper.GetIIsWebServer(SiteId).Invoke("Start", null);
+        }
+
+    }
+
+    public delegate void IISBindingHandler(IISBinding iisBinding); 
+
+    public class IISBindingParser
+    {
+        public static void Parse(String BindStr, IISBindingHandler callBack)
+        {
+            String[] bindings = BindStr.Split(new String[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (String singleBind in bindings)
+            {
+                String[] bindParams = singleBind.Split(new String[] { ":" }, StringSplitOptions.None);
+                if (bindParams.Length < 4) throw new Exception(String.Format("Invalid binding string specified {0}, must be in http::80:www.abcdefg.com form", singleBind));
+                callBack(new IISBinding() { Protocol = bindParams[0], IP = bindParams[1], Port = bindParams[2], Host = bindParams[3] });
+            }
+        }
+    }
+    
+    public class IISBinding
+    {
+        public String Protocol { get; set; }
+        public String IP { get; set; }
+        public String Port { get; set; }
+        public String Host { get; set; }
+        public String BindString
+        {
+            get
+            {
+                return String.Format("{0}:{1}:{2}:{3}", Protocol, IP, Port, Host);
+            }
+        }
+        //IIS 6 compatible bind string format (does not include the protocol)
+        public String WMIBindString
+        {
+            get
+            {
+                return String.Format("{0}:{1}:{2}", IP, Port, Host);
+            }
+        }
+    }
+
+    
+
+    public class IISIdentifier
+    {
+        public String Value { get; set; }
+        public IISIdentifier(String ID)
+        {
+            Value = ID;
+        }
+    }
+
+    public class IISSiteIdIdentifier : IISIdentifier { public IISSiteIdIdentifier(String ID) : base(ID) { } }
+    public class IISBindingIdentifier : IISIdentifier { public IISBindingIdentifier(String ID) : base(ID) { } }
+    public class IISServerCommentIdentifier : IISIdentifier { public IISServerCommentIdentifier(String ID) : base(ID) { } }
+
 
 
     //The following is examples of what the metabase looks like
