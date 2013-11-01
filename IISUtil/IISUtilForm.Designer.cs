@@ -1,6 +1,6 @@
 ﻿namespace IISUtil
 {
-    partial class Form1
+    partial class IISUtilForm
     {
         /// <summary>
         /// Required designer variable.

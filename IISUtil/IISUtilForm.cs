@@ -8,9 +8,9 @@ using Microsoft.Web.Administration;
 
 namespace IISUtil
 {
-    public partial class Form1 : Form
+    public partial class IISUtilForm : Form
     {
-        public Form1()
+        public IISUtilForm()
         {
             InitializeComponent();
         }
