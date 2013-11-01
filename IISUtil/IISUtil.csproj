@@ -73,6 +73,7 @@
     <Compile Include="IISUtilForm.Designer.cs">
       <DependentUpon>IISUtilForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="IISWMI.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="IISUtilForm.resx">
