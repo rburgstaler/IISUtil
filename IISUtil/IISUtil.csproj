@@ -68,6 +68,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommandParams.cs" />
+    <Compile Include="CommandProcessor.cs" />
     <Compile Include="IISUtilForm.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -128,7 +128,7 @@ namespace IISUtil
             }
             catch (Exception exp)
             {
-                throw new Exception("Error starting web server: "+exp.InnerException.Message);
+                throw new Exception(String.Format("Inner error: {0} Outer error: {1}", exp.InnerException.Message, exp.Message));
             }
         }
 

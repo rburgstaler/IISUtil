@@ -58,133 +58,16 @@ namespace IISUtil
             CommandParams cp = new CommandParams();
             if (!CommandLineParamsParser.PopulateParamObject(cp)) return;
 
-            try
-            {
-                //First we want to check if we need to delete a site
-                if (cp.DeleteSite != null)
-                {
-                    IISWMISite.DeleteSite(new IISServerCommentIdentifier(cp.DeleteSite));
-                }
-
-                IISWMISite site = null;
-                //Check if we need to create a new site
-                if (cp.CreateSite != null)
-                {
-                    if (cp.CreateSite.Trim() == "")
-                    {
-                        OutputError("Create site cannot specify a blank site.");
-                        return;
-                    } 
-                    if (String.IsNullOrEmpty(cp.PhysicalPath))
-                    {
-                        OutputError("In order to create a website, a valid \"PhysicalPath\" must be specified.");
-                        return;
-                    }
-                    site = IISWMISite.CreateNewSite(cp.CreateSite, cp.Bindings ?? "", cp.PhysicalPath);
-                }
-
-                //If the find parameter is specified, it will override the site that may have been created
-                if (cp.FindByServerComment != null)
-                {
-                    site = IISWMISite.FindSite(new IISServerCommentIdentifier(cp.FindByServerComment));
-                    if (site == null)
-                    {
-                        OutputError(String.Format("Unable to find site. {0]", cp.FindByServerComment));
-                        return;
-                    }
-                }
-
-                //At this time if we do not have a site object... then we cannot do anything
-                if (site == null)
-                {
-                    OutputError("Unable to create or find a site.  Nothing can be done until proper CreateSite or FindByXXXXX parameters have been specified.");
-                    return;
-                }
-
-                if (cp.Bindings != null)
-                {
-                    try
-                    {
-                        site.SetBindings(cp.Bindings);
-                    }
-                    catch (Exception exp)
-                    {
-                        OutputError(String.Format("Error while setting bindings. {0}", exp.Message));
-                        return;
-                    }                   
-                }
-                if (cp.DefaultDoc != null)
-                {
-                    site.DefaultDoc = cp.DefaultDoc;
-                }
+            CommandProcessor proc = new CommandProcessor();
+            proc.ErrorOut = OutputError;
+            proc.Run(cp);
 
 
+            Close();
+            // When using a winforms app with AttachConsole the app complets but there is no newline after the process stops. 
+            //This gives the newline and looks normal from the console:
+            SendKeys.SendWait("{ENTER}");
 
-                if (cp.AccessFlags != null)
-                {
-                    try
-                    {
-                        site.AccessFlags = CommandLineParamsParser.BuildFlagFromDelimString(cp.AccessFlags, typeof(AccessFlags));
-                    }
-                    catch (Exception exp)
-                    {
-                        OutputError(String.Format("Error while setting AccessFlags. {0}", exp.Message));
-                        return;
-                    } 
-                }
-                if (cp.AuthFlags != null)
-                {
-                    try
-                    {
-                        site.AccessFlags = CommandLineParamsParser.BuildFlagFromDelimString(cp.AuthFlags, typeof(AuthFlags));
-                    }
-                    catch (Exception exp)
-                    {
-                        OutputError(String.Format("Error while setting AuthFlags. {0}", exp.Message));
-                        return;
-                    } 
-                }
-
-                if (cp.AppPoolId != null)
-                {
-                    site.AppPoolId = cp.AppPoolId;
-                }
-                if (cp.ASPDotNetVersion != null)
-                {
-                    AspDotNetVersion version;
-                    try
-                    {
-                        version = (AspDotNetVersion)Enum.Parse(typeof(AspDotNetVersion), cp.ASPDotNetVersion, true);
-                    }
-                    catch (Exception exp)
-                    {
-                        OutputError(String.Format("An invalid ASPDotNetVersion value was specified. \"{0}\" is invalid.", cp.ASPDotNetVersion));
-                        return;
-                    }
-                    site.SetASPDotNetVersion(version);
-                }
-                if (cp.StartSite != null)
-                {
-                    try
-                    {
-                        site.Start();
-                    }
-                    catch (Exception exp)
-                    {
-                        OutputError(exp.Message);
-                        return;
-                    }
-                }
-
-            }
-            finally
-            {
-
-                Close();
-                // When using a winforms app with AttachConsole the app complets but there is no newline after the process stops. 
-                //This gives the newline and looks normal from the console:
-                SendKeys.SendWait("{ENTER}");
-            }
         }
 
 

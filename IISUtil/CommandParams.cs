@@ -79,22 +79,4 @@ namespace IISUtil
         public String ASPDotNetVersion { get; set; }
         public String StartSite { get; set; }
     }
-    /*
-            string serverComment = "zzz";
-            string path = @"C:\Inetpub\zzz";
-            string serverBindings = "https:*:80:zzz.cordonco.com;https::443:zzz.cordonco.com";
-            string appPool = "DotNet4AppPool";
-
-
-            Directory.CreateDirectory(path);
-            IISWMISite site = IISWMISite.CreateNewSite(serverComment, serverBindings, path);
-            site.SetBindings(serverBindings);
-            site.DefaultDoc = "index.aspx";
-            site.AccessFlags = AccessFlags.AccessRead | AccessFlags.AccessExecute;
-            site.AuthFlags = AuthFlags.AuthNTLM | AuthFlags.AuthAnonymous;
-            site.AppPoolId = appPool;
-            site.SetASPDotNetVersion(AspDotNetVersion.AspNetV4);
-            site.Start();
- 
-     */
 }
