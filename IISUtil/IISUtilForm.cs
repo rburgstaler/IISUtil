@@ -39,7 +39,14 @@ namespace IISUtil
             site.AuthFlags = AuthFlags.AuthNTLM | AuthFlags.AuthAnonymous;
             site.AppPoolId = appPool;
             site.SetASPDotNetVersion(AspDotNetVersion.AspNetV4);
-            site.Start();
+            try
+            {
+                site.Start();
+            }
+            catch (Exception exp)
+            {
+                OutputError(exp.Message);
+            }
         }
 
         private void button2_Click(object sender, EventArgs e)
