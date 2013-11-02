@@ -76,6 +76,21 @@ namespace IISUtil
             };
         }
 
+        //Return null if the site is not to be found
+        public static IISWMISite FindSite(IISIdentifier Identifier)
+        {
+            String id = "";
+            //need to be sure that the site exists or else it can throw an error
+            if (IISWMIHelper.TryGetSiteID(Identifier, ref id))
+            {
+                return new IISWMISite()
+                {
+                    SiteId = id
+                };
+            }
+            return null;
+        }
+
         //http::80:www.abcdefg.com
         //https::443:www.abcdefg.com
         public void SetBindings(String siteBindings)

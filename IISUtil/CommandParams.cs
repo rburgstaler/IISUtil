@@ -50,16 +50,33 @@ namespace IISUtil
             }
             return retVal;
         }
+
+        //Use a class with static methods on it to build a flag mask based on the fields in the
+        //class matching the | split aFlagString values
+        public static Int32 BuildFlagFromDelimString(String aFlagString, Type flagObjType)
+        {
+            Int32 retVal = 0;
+            String[] flagValues = aFlagString.Split(new String[] { "|" }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (String flagVal in flagValues)
+            {
+                FieldInfo fi = flagObjType.GetFields().First(t => t.Name.Equals(flagVal, StringComparison.CurrentCultureIgnoreCase));
+                if (fi == null) throw new Exception(String.Format("Flag value {0} is invalid.", flagVal));
+                retVal = retVal | (Int32)fi.GetValue(null);
+            }
+            return retVal;
+        }
     }
 
     public class CommandParams
     {
         public String FindByServerComment { get; set; }
+        public String DeleteSite { get; set; }
         public String CreateSite { get; set; }
         public String PhysicalPath { get; set; }
         public String Bindings { get; set; }
         public String DefaultDoc { get; set; }
         public String AccessFlags { get; set; }
+        public String AuthFlags { get; set; }
         public String AppPoolId { get; set; }
         public String ASPDotNetVersion { get; set; }
     }

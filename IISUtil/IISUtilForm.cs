@@ -60,8 +60,14 @@ namespace IISUtil
 
             try
             {
+                //First we want to check if we need to delete a site
+                if (cp.DeleteSite != null)
+                {
+                    IISWMISite.DeleteSite(new IISServerCommentIdentifier(cp.DeleteSite));
+                }
+
                 IISWMISite site = null;
-                //First thing is to check if we need to create a new site
+                //Check if we need to create a new site
                 if (cp.CreateSite != null)
                 {
                     if (cp.CreateSite.Trim() == "")
@@ -77,27 +83,68 @@ namespace IISUtil
                     site = IISWMISite.CreateNewSite(cp.CreateSite, cp.Bindings ?? "", cp.PhysicalPath);
                 }
 
-                //Finish--try to lookup the site based on some input parameters
+                //If the find parameter is specified, it will override the site that may have been created
+                if (cp.FindByServerComment != null)
+                {
+                    site = IISWMISite.FindSite(new IISServerCommentIdentifier(cp.FindByServerComment));
+                    if (site == null)
+                    {
+                        OutputError(String.Format("Unable to find site. {0]", cp.FindByServerComment));
+                        return;
+                    }
+                }
 
                 //At this time if we do not have a site object... then we cannot do anything
                 if (site == null)
                 {
-                    OutputError("We were unable to create or find a site.  Nothing can be done until proper CreateSite or FindByXXXXX parameters have been specified.");
+                    OutputError("Unable to create or find a site.  Nothing can be done until proper CreateSite or FindByXXXXX parameters have been specified.");
                     return;
                 }
 
                 if (cp.Bindings != null)
                 {
-                    site.DefaultDoc = cp.DefaultDoc;
+                    try
+                    {
+                        site.SetBindings(cp.Bindings);
+                    }
+                    catch (Exception exp)
+                    {
+                        OutputError(String.Format("Error while setting bindings. {0}", exp.Message));
+                        return;
+                    }                   
                 }
                 if (cp.DefaultDoc != null)
                 {
                     site.DefaultDoc = cp.DefaultDoc;
                 }
+
+
+
                 if (cp.AccessFlags != null)
                 {
-
+                    try
+                    {
+                        site.AccessFlags = CommandLineParamsParser.BuildFlagFromDelimString(cp.AccessFlags, typeof(AccessFlags));
+                    }
+                    catch (Exception exp)
+                    {
+                        OutputError(String.Format("Error while setting AccessFlags. {0}", exp.Message));
+                        return;
+                    } 
                 }
+                if (cp.AuthFlags != null)
+                {
+                    try
+                    {
+                        site.AccessFlags = CommandLineParamsParser.BuildFlagFromDelimString(cp.AuthFlags, typeof(AuthFlags));
+                    }
+                    catch (Exception exp)
+                    {
+                        OutputError(String.Format("Error while setting AuthFlags. {0}", exp.Message));
+                        return;
+                    } 
+                }
+
                 if (cp.AppPoolId != null)
                 {
                     site.AppPoolId = cp.AppPoolId;
@@ -107,7 +154,7 @@ namespace IISUtil
                     AspDotNetVersion version;
                     try
                     {
-                        version = (AspDotNetVersion)Enum.Parse(typeof(AspDotNetVersion), cp.ASPDotNetVersion, false);
+                        version = (AspDotNetVersion)Enum.Parse(typeof(AspDotNetVersion), cp.ASPDotNetVersion, true);
                     }
                     catch (Exception exp)
                     {
@@ -115,14 +162,7 @@ namespace IISUtil
                         return;
                     }
                     site.SetASPDotNetVersion(version);
-
                 }
-             
-        //public String Bindings { get; set; }
-        //public String DefaultDoc { get; set; }
-        //public String AccessFlags { get; set; }
-        //public String AppPoolId { get; set; }
-        //public String ASPDotNetVersion { get; set; }
 
             }
             finally
