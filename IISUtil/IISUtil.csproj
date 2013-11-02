@@ -67,6 +67,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandParams.cs" />
     <Compile Include="IISUtilForm.cs">
       <SubType>Form</SubType>
     </Compile>

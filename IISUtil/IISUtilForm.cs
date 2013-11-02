@@ -27,7 +27,7 @@ namespace IISUtil
               
             string serverComment = "zzz";
             string path = @"C:\Inetpub\zzz";
-            string serverBindings = "https:*:80:zzz.cordonco.com;https::443:zzz.cordonco.com";
+            string serverBindings = "http::80:zzz.cordonco.com;https::443:zzz.cordonco.com";
             string appPool = "DotNet4AppPool";
 
 
@@ -52,38 +52,35 @@ namespace IISUtil
 
             string w3wpPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), @"inetsrv\w3wp.exe");
             FileVersionInfo versionInfo = FileVersionInfo.GetVersionInfo(w3wpPath);
-            Console.WriteLine(versionInfo.ToString());
+            OutputStatus(String.Format("w3wp (IIS) version: {0}", versionInfo.FileVersion));
 
-            if (!CommandLineParameterExists("MyCommand"))  return;
-            Console.Error.WriteLine("Standard Error {0}", Environment.GetCommandLineArgs().Length);
+            //If at least one of the values that we need exists... then we will assume that the user wants this run as a command line tool.
+            CommandParams cp = new CommandParams();
+            if (!CommandLineParamsParser.PopulateParamObject(cp)) return;
+
+
+             
+
+
+
+
             Close();
             // When using a winforms app with AttachConsole the app complets but there is no newline after the process stops. 
             //This gives the newline and looks normal from the console:
             SendKeys.SendWait("{ENTER}");
         }
 
-        public static Boolean CommandLineParameterExists(String AOption)
+
+        public void OutputError(String errorMessage)
         {
-            String dummy = "";
-            return GetCommandLineParameter(AOption, ref dummy);
-
+            textBox1.Text += errorMessage + Environment.NewLine;
+            Console.Error.WriteLine("Standard Error {0}", Environment.GetCommandLineArgs().Length);
         }
-        public static Boolean GetCommandLineParameter(String AOption, ref String AParamValue)
+        public void OutputStatus(String statusMessage)
         {
-            AParamValue = "";
-            String[] sArgs = Environment.GetCommandLineArgs();
-            for (int x = 1; x < sArgs.Length; x++)
-            {
-                if (String.Compare(AOption, sArgs[x], true) == 0)
-                {
-                    if ((x + 1) < sArgs.Length) AParamValue = sArgs[x + 1];
-                    //The result is true whether there is a corresponding value or not
-                    return true;
-                }
-
-            }
-            return false;
+            textBox1.Text += statusMessage + Environment.NewLine;
+            Console.WriteLine(statusMessage);
         }
-
     }
+
 }
