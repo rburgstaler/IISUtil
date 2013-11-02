@@ -67,6 +67,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandLineParser.cs" />
     <Compile Include="CommandParams.cs" />
     <Compile Include="CommandProcessor.cs" />
     <Compile Include="IISUtilForm.cs">

@@ -5,6 +5,9 @@ using System.DirectoryServices;
 using System.IO;
 using System.Diagnostics;
 using Microsoft.Web.Administration;
+using System.Text.RegularExpressions;
+using System.Linq;
+using System.Reflection;
 
 namespace IISUtil
 {
@@ -17,14 +20,13 @@ namespace IISUtil
 
         private void button1_Click(object sender, EventArgs e)
         {
-            /*
-            String si = "not found";
-            IISServerCommentIdentifier id = new IISServerCommentIdentifier("zzz");
-            IISWMIHelper.TryGetSiteID(id, ref si);
-            textBox1.Text += si + Environment.NewLine;
-            return;
-            */
-              
+            String cmdText = tbArguments.Text.Replace(Environment.NewLine, " ");
+            String[] args = CommandLineParser.GetArguments(cmdText);
+            ProcessArguments(args); 
+        }
+
+        private void MinimumAspDotNet4onIIS6ConfigExample()
+        {
             string serverComment = "zzz";
             string path = @"C:\Inetpub\zzz";
             string serverBindings = "http::80:zzz.cordonco.com;https::443:zzz.cordonco.com";
@@ -49,9 +51,15 @@ namespace IISUtil
             }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void ProcessArguments(String[] CmdArguments)
         {
-            IISWMISite.DeleteSite(new IISServerCommentIdentifier("zzz"));
+            CommandParams cp = new CommandParams();
+            if (!CommandLineParamsParser.PopulateParamObject(CmdArguments, cp)) return;
+
+            CommandProcessor proc = new CommandProcessor();
+            proc.ErrorOut = OutputError;
+            proc.StatusOut = OutputStatus;
+            proc.Run(cp);
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -62,9 +70,18 @@ namespace IISUtil
             OutputStatus(String.Format("w3wp (IIS) version: {0}", versionInfo.FileVersion));
 
             //If at least one of the values that we need exists... then we will assume that the user wants this run as a command line tool.
+            //but this needs to be reworked to handle the determination differently... Wasted processing as it is because it does
+            //PopulateParamObject here and in ProcessArguments().  We need to do determine a good sound way of handling the following scenarios.
+            //1.) Invalid parameters when being run from the command line --right now-->uses the valid params if they exist --should-->complain that there was bad params
+            //2.) Invalid parameters when being run from the form portion of the app --right now-->uses the valid params if they exist --should-->complain that there was bad params
+            //3.) Valid parameters when being run from the command line  --right now--> this is how it determines that it does not want to show the form
+            //4.) Valid parameters when being run from the form portion of the app --right now--> will just run
+            //----->So... we need to change the PopulateParamObject() method to a valid params method that lets us know which of the 4 scenarios above applies
             CommandParams cp = new CommandParams();
-            if (!CommandLineParamsParser.PopulateParamObject(cp)) return;
+            if (!CommandLineParamsParser.PopulateParamObject(Environment.GetCommandLineArgs(), cp)) return;
 
+
+            ProcessArguments(Environment.GetCommandLineArgs());
             CommandProcessor proc = new CommandProcessor();
             proc.ErrorOut = OutputError;
             proc.StatusOut = OutputStatus;
@@ -88,6 +105,12 @@ namespace IISUtil
         {
             textBox1.Text += statusMessage + Environment.NewLine;
             Console.WriteLine(statusMessage);
+        }
+
+        private void btGetPossibleArguments_Click(object sender, EventArgs e)
+        {
+            PropertyInfo[] fis = typeof(CommandParams).GetProperties();
+            tbArguments.Text = String.Join(Environment.NewLine, fis.Select(t => "-" + t.Name).ToArray());
         }
     }
 

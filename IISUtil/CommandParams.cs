@@ -8,18 +8,17 @@ namespace IISUtil
 {
     public class CommandLineParamsParser
     {
-        public static Boolean ParamExists(String AOption)
+        public static Boolean ParamExists(String[] sArgs, String AOption)
         {
             String dummy = "";
-            return GetParam(AOption, ref dummy);
+            return GetParam(sArgs, AOption, ref dummy);
 
         }
-        public static Boolean GetParam(String AOption, ref String AParamValue)
+        public static Boolean GetParam(String[] sArgs, String AOption, ref String AParamValue)
         {
             String prefixedOption = AOption;
             AParamValue = "";
-            String[] sArgs = Environment.GetCommandLineArgs();
-            for (int x = 1; x < sArgs.Length; x++)
+            for (int x = 0; x < sArgs.Length; x++)
             {
                 if (String.Compare(AOption, sArgs[x], true) == 0)
                 {
@@ -33,14 +32,14 @@ namespace IISUtil
         }
 
         //Returns true if at least one value got populated
-        public static bool PopulateParamObject(Object obj)
+        public static bool PopulateParamObject(String[] sArgs, Object obj)
         {
             bool retVal = false;
             PropertyInfo[] pos = obj.GetType().GetProperties();
             String paramVal = "";
             foreach (PropertyInfo pi in pos)
             {
-                if (GetParam("-" + pi.Name, ref paramVal))
+                if (GetParam(sArgs, "-" + pi.Name, ref paramVal))
                 {
                     pi.SetValue(obj, paramVal, null);
                     retVal = true;
