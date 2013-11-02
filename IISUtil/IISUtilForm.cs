@@ -67,6 +67,7 @@ namespace IISUtil
 
             CommandProcessor proc = new CommandProcessor();
             proc.ErrorOut = OutputError;
+            proc.StatusOut = OutputStatus;
             proc.Run(cp);
 
 

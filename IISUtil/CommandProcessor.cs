@@ -11,10 +11,27 @@ namespace IISUtil
     {
         public MsgOut ErrorOut { get; set; }
         public MsgOut StatusOut { get; set; }
+
         private void OutputError(String msg)
         {
             if (ErrorOut != null) ErrorOut(msg);
         }
+
+        private void OutputError(String msg, params Object[] par)
+        {
+            OutputError(String.Format(msg, par));
+        }
+
+        private void OutputStatus(String msg)
+        {
+            if (StatusOut != null) StatusOut(msg);
+        }
+
+        private void OutputStatus(String msg, params Object[] par)
+        {
+            OutputStatus(String.Format(msg, par));
+        }
+
         public void Run(CommandParams cp)
         {
             try
@@ -22,7 +39,10 @@ namespace IISUtil
                 //First we want to check if we need to delete a site
                 if (cp.DeleteSite != null)
                 {
-                    IISWMISite.DeleteSite(new IISServerCommentIdentifier(cp.DeleteSite));
+                    if (IISWMISite.DeleteSite(new IISServerCommentIdentifier(cp.DeleteSite))) //returns true if the site is found
+                        OutputStatus("Site {0} deleted", cp.DeleteSite);
+                    else
+                        OutputStatus("Site {0} not deleted because it was not found", cp.DeleteSite);  //does not warrant an error because that was the desired outcome
                     return;
                 }
 
@@ -40,7 +60,15 @@ namespace IISUtil
                         OutputError("In order to create a website, a valid \"PhysicalPath\" must be specified.");
                         return;
                     }
-                    site = IISWMISite.CreateNewSite(cp.CreateSite, cp.Bindings ?? "", cp.PhysicalPath);
+                    try
+                    {
+                        site = IISWMISite.CreateNewSite(cp.CreateSite, cp.Bindings ?? "", cp.PhysicalPath);
+                        OutputStatus("Site {0} created", cp.CreateSite);
+                    }
+                    catch (Exception exp)
+                    {
+                        OutputError("Error creating site {0}: {1}", cp.CreateSite, exp.Message);
+                    }
                 }
 
                 //If the find parameter is specified, it will override the site that may have been created
@@ -51,6 +79,10 @@ namespace IISUtil
                     {
                         OutputError(String.Format("Unable to find site. {0]", cp.FindByServerComment));
                         return;
+                    }
+                    else
+                    {
+                        OutputStatus("Found site {0} with id {1}", cp.FindByServerComment, site.SiteId);
                     }
                 }
 
@@ -66,6 +98,7 @@ namespace IISUtil
                     try
                     {
                         site.SetBindings(cp.Bindings);
+                        OutputStatus("Bindings set to {0}", cp.Bindings);
                     }
                     catch (Exception exp)
                     {
@@ -76,6 +109,7 @@ namespace IISUtil
                 if (cp.DefaultDoc != null)
                 {
                     site.DefaultDoc = cp.DefaultDoc;
+                    OutputStatus("Default document set to {0}", cp.DefaultDoc);
                 }
 
 
@@ -85,6 +119,7 @@ namespace IISUtil
                     try
                     {
                         site.AccessFlags = CommandLineParamsParser.BuildFlagFromDelimString(cp.AccessFlags, typeof(AccessFlags));
+                        OutputStatus("AccessFlags set to {0}", cp.AccessFlags);
                     }
                     catch (Exception exp)
                     {
@@ -96,7 +131,8 @@ namespace IISUtil
                 {
                     try
                     {
-                        site.AccessFlags = CommandLineParamsParser.BuildFlagFromDelimString(cp.AuthFlags, typeof(AuthFlags));
+                        site.AuthFlags = CommandLineParamsParser.BuildFlagFromDelimString(cp.AuthFlags, typeof(AuthFlags));
+                        OutputStatus("AuthFlags set to {0}", cp.AuthFlags);
                     }
                     catch (Exception exp)
                     {
@@ -108,6 +144,7 @@ namespace IISUtil
                 if (cp.AppPoolId != null)
                 {
                     site.AppPoolId = cp.AppPoolId;
+                    OutputStatus("AppPoolId set to {0}", cp.AppPoolId);
                 }
                 if (cp.ASPDotNetVersion != null)
                 {
@@ -122,12 +159,14 @@ namespace IISUtil
                         return;
                     }
                     site.SetASPDotNetVersion(version);
+                    OutputStatus("ASP DotNet version set to {0}", version);
                 }
                 if (cp.StartSite != null)
                 {
                     try
                     {
                         site.Start();
+                        OutputStatus("Site started with success");
                     }
                     catch (Exception exp)
                     {
@@ -138,6 +177,11 @@ namespace IISUtil
             }
             catch (Exception exp)
             {
+
+
+
+
+
                 OutputError("An exception took place during execution: " + exp.Message + exp.StackTrace);
             }
 
