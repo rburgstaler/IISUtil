@@ -122,7 +122,14 @@ namespace IISUtil
 
         public void Start()
         {
-            IISWMIHelper.GetIIsWebServer(SiteId).Invoke("Start", null);
+            try
+            {
+                IISWMIHelper.GetIIsWebServer(SiteId).Invoke("Start", null);
+            }
+            catch (Exception exp)
+            {
+                throw new Exception("Error starting web server: "+exp.InnerException.Message);
+            }
         }
 
         private T GetVirtualDirPropertyDef<T>(String propertyName, T DefaultValue)

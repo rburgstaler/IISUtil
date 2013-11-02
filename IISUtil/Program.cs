@@ -24,16 +24,6 @@ namespace IISUtil
             // must be before any calls to Console.WriteLine()
             AttachConsole(ATTACH_PARENT_PROCESS);
 
-
-            // to demonstrate where the console output is going
-            int argCount = (args == null) ? 0 : args.Length;
-            Console.WriteLine("You specified {0} arguments:", argCount);
-            for (int i = 0; i < argCount; i++)
-            {
-                Console.WriteLine("  {0}", args[i]);
-            }
-
-
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new IISUtilForm());

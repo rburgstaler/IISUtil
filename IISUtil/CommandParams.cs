@@ -40,10 +40,8 @@ namespace IISUtil
             String paramVal = "";
             foreach (PropertyInfo pi in pos)
             {
-                Console.WriteLine("Trying to find: " + pi.Name);
                 if (GetParam("-" + pi.Name, ref paramVal))
                 {
-                    Console.WriteLine(pi.Name);
                     pi.SetValue(obj, paramVal, null);
                     retVal = true;
                 }
@@ -79,6 +77,7 @@ namespace IISUtil
         public String AuthFlags { get; set; }
         public String AppPoolId { get; set; }
         public String ASPDotNetVersion { get; set; }
+        public String StartSite { get; set; }
     }
     /*
             string serverComment = "zzz";

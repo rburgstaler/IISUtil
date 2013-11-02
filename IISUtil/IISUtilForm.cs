@@ -163,6 +163,18 @@ namespace IISUtil
                     }
                     site.SetASPDotNetVersion(version);
                 }
+                if (cp.StartSite != null)
+                {
+                    try
+                    {
+                        site.Start();
+                    }
+                    catch (Exception exp)
+                    {
+                        OutputError(exp.Message);
+                        return;
+                    }
+                }
 
             }
             finally
