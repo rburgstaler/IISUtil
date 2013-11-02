@@ -58,23 +58,88 @@ namespace IISUtil
             CommandParams cp = new CommandParams();
             if (!CommandLineParamsParser.PopulateParamObject(cp)) return;
 
+            try
+            {
+                IISWMISite site = null;
+                //First thing is to check if we need to create a new site
+                if (cp.CreateSite != null)
+                {
+                    if (cp.CreateSite.Trim() == "")
+                    {
+                        OutputError("Create site cannot specify a blank site.");
+                        return;
+                    } 
+                    if (String.IsNullOrEmpty(cp.PhysicalPath))
+                    {
+                        OutputError("In order to create a website, a valid \"PhysicalPath\" must be specified.");
+                        return;
+                    }
+                    site = IISWMISite.CreateNewSite(cp.CreateSite, cp.Bindings ?? "", cp.PhysicalPath);
+                }
 
+                //Finish--try to lookup the site based on some input parameters
+
+                //At this time if we do not have a site object... then we cannot do anything
+                if (site == null)
+                {
+                    OutputError("We were unable to create or find a site.  Nothing can be done until proper CreateSite or FindByXXXXX parameters have been specified.");
+                    return;
+                }
+
+                if (cp.Bindings != null)
+                {
+                    site.DefaultDoc = cp.DefaultDoc;
+                }
+                if (cp.DefaultDoc != null)
+                {
+                    site.DefaultDoc = cp.DefaultDoc;
+                }
+                if (cp.AccessFlags != null)
+                {
+
+                }
+                if (cp.AppPoolId != null)
+                {
+                    site.AppPoolId = cp.AppPoolId;
+                }
+                if (cp.ASPDotNetVersion != null)
+                {
+                    AspDotNetVersion version;
+                    try
+                    {
+                        version = (AspDotNetVersion)Enum.Parse(typeof(AspDotNetVersion), cp.ASPDotNetVersion, false);
+                    }
+                    catch (Exception exp)
+                    {
+                        OutputError(String.Format("An invalid ASPDotNetVersion value was specified. \"{0}\" is invalid.", cp.ASPDotNetVersion));
+                        return;
+                    }
+                    site.SetASPDotNetVersion(version);
+
+                }
              
+        //public String Bindings { get; set; }
+        //public String DefaultDoc { get; set; }
+        //public String AccessFlags { get; set; }
+        //public String AppPoolId { get; set; }
+        //public String ASPDotNetVersion { get; set; }
 
+            }
+            finally
+            {
 
-
-
-            Close();
-            // When using a winforms app with AttachConsole the app complets but there is no newline after the process stops. 
-            //This gives the newline and looks normal from the console:
-            SendKeys.SendWait("{ENTER}");
+                Close();
+                // When using a winforms app with AttachConsole the app complets but there is no newline after the process stops. 
+                //This gives the newline and looks normal from the console:
+                SendKeys.SendWait("{ENTER}");
+            }
         }
 
 
         public void OutputError(String errorMessage)
         {
             textBox1.Text += errorMessage + Environment.NewLine;
-            Console.Error.WriteLine("Standard Error {0}", Environment.GetCommandLineArgs().Length);
+            Console.Error.WriteLine(errorMessage);
         }
         public void OutputStatus(String statusMessage)
         {

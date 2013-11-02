@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.DirectoryServices;
 using System.Reflection;
+using System.IO;
 
 namespace IISUtil
 {
@@ -64,6 +65,7 @@ namespace IISUtil
         public String SiteId { get; set; }
         public static IISWMISite CreateNewSite(String serverComment, String serverBindings, String filePath)
         {
+            Directory.CreateDirectory(filePath);
             //Do not put any bindings in... we will do that after the site is create
             object id = (object)IISWMIHelper.GetIIsWebService().Invoke("CreateNewSite", serverComment, new object[0], filePath);
 
@@ -340,6 +342,7 @@ namespace IISUtil
         public const string AspNetV11 = "1.1.4322";
         public const string AspNetV2 = "2.0.50727";
         public const string AspNetV4 = "4.0.30319";
+
         public static String VersionString(AspDotNetVersion version)
         {
             FieldInfo fi = typeof(AspDotNetVersionConst).GetField(version.ToString());

@@ -55,6 +55,8 @@ namespace IISUtil
     public class CommandParams
     {
         public String FindByServerComment { get; set; }
+        public String CreateSite { get; set; }
+        public String PhysicalPath { get; set; }
         public String Bindings { get; set; }
         public String DefaultDoc { get; set; }
         public String AccessFlags { get; set; }
