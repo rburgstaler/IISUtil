@@ -18,7 +18,7 @@ namespace IISUtil
             InitializeComponent();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void btRun_Click(object sender, EventArgs e)
         {
             String cmdText = tbArguments.Text.Replace(Environment.NewLine, " ");
             String[] args = CommandLineParser.GetArguments(cmdText);
