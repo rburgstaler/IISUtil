@@ -15,16 +15,42 @@ namespace IISUtil
             return GetParam(sArgs, AOption, ref dummy);
 
         }
+
+        //Finds all arguments that qualify as parameter name but are not in the parameter object...  An empty array result is good!
+        public static String[] GetInvalidParams(String[] sArgs, Type paramObjType)
+        {
+            List<String> retList = new List<String>();
+            String paramName = "";
+            for (int x = 0; x < sArgs.Length; x++)
+            {
+                if (TryGetParamName(sArgs[x], ref paramName))
+                {
+                    PropertyInfo fi = paramObjType.GetProperties().FirstOrDefault(t => t.Name.Equals(paramName, StringComparison.CurrentCultureIgnoreCase));
+                    if (fi == null) retList.Add(sArgs[x]);
+                }
+            }
+            return retList.ToArray();
+        }
+
+        private static Regex ParamReg = new Regex(@"^(-|/|--)(\w+)");  //I am guessing this is not thread safe (keep that in mind)
+        //Returns true if the argument is a valid param name and returns the paramname
+        public static Boolean TryGetParamName(String Argument, ref String paramName)
+        {
+            MatchCollection mc = ParamReg.Matches(Argument);
+            bool retVal = (mc.Count >0) && (mc[0].Groups.Count>2);
+            if (retVal) paramName = mc[0].Groups[2].Value;
+            return retVal;
+
+        }
         
         public static Boolean GetParam(String[] sArgs, String AOption, ref String AParamValue)
         {
-            Regex reg = new Regex(@"^(-|/|--)(\w+)");
             String prefixedOption = AOption;
             AParamValue = "";
+            String paramName = "";
             for (int x = 0; x < sArgs.Length; x++)
             {
-                MatchCollection mc = reg.Matches(sArgs[x]);
-                if ((mc.Count >0) && (mc[0].Groups.Count>2) && (String.Compare(AOption, mc[0].Groups[2].Value, true)) == 0)
+                if ((TryGetParamName(sArgs[x], ref paramName)) && (paramName.Equals(AOption, StringComparison.CurrentCultureIgnoreCase)))
                 {
                     if ((x + 1) < sArgs.Length) AParamValue = sArgs[x + 1];
                     //The result is true whether there is a corresponding value or not
@@ -60,7 +86,7 @@ namespace IISUtil
             String[] flagValues = aFlagString.Split(new String[] { "|" }, StringSplitOptions.RemoveEmptyEntries);
             foreach (String flagVal in flagValues)
             {
-                FieldInfo fi = flagObjType.GetFields().First(t => t.Name.Equals(flagVal, StringComparison.CurrentCultureIgnoreCase));
+                FieldInfo fi = flagObjType.GetFields().FirstOrDefault(t => t.Name.Equals(flagVal, StringComparison.CurrentCultureIgnoreCase));
                 if (fi == null) throw new Exception(String.Format("Flag value {0} is invalid.", flagVal));
                 retVal = retVal | (Int32)fi.GetValue(null);
             }

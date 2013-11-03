@@ -28,13 +28,10 @@ namespace IISUtil
 
         private void ProcessArguments(String[] CmdArguments)
         {
-            CommandParams cp = new CommandParams();
-            if (!CommandLineParamsParser.PopulateParamObject(CmdArguments, cp)) return;
-
             CommandProcessor proc = new CommandProcessor();
             proc.ErrorOut = OutputError;
             proc.StatusOut = OutputStatus;
-            proc.Run(cp);
+            proc.Run(CmdArguments);
         }
 
         private String StoreFile
@@ -60,13 +57,7 @@ namespace IISUtil
             CommandParams cp = new CommandParams();
             if (!CommandLineParamsParser.PopulateParamObject(Environment.GetCommandLineArgs(), cp)) return;
 
-
             ProcessArguments(Environment.GetCommandLineArgs());
-            CommandProcessor proc = new CommandProcessor();
-            proc.ErrorOut = OutputError;
-            proc.StatusOut = OutputStatus;
-            proc.Run(cp);
-
 
             Close();
             // When using a winforms app with AttachConsole the app complets but there is no newline after the process stops. 

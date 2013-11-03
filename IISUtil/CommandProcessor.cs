@@ -34,10 +34,31 @@ namespace IISUtil
             OutputStatus(String.Format(msg, par));
         }
 
-        public void Run(CommandParams cp)
+        public void Run(String[] CmdArguments)
         {
             try
             {
+                //We do not want to run if there are invalid arguments... otherwise the end user
+                //will think that it ran with success when it did not
+                String[] invalids = CommandLineParamsParser.GetInvalidParams(CmdArguments, typeof(CommandParams));
+                if (invalids.Length > 0)
+                {
+                    OutputError("Invalid argument(s) were found.");
+                    foreach (String arg in invalids) OutputError("{0} is an invalid argument", arg);
+                    OutputError("Fix this before continuing.");
+                    return;
+                }
+
+
+                //Make sure that the user did in fact pass in some valid params
+                CommandParams cp = new CommandParams();
+                if (!CommandLineParamsParser.PopulateParamObject(CmdArguments, cp))
+                {
+                    OutputError("There were no valid arguments passed in.  Use --Help to determine all valid arguments.");
+                    return;
+                }
+
+
                 string w3wpPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), @"inetsrv\w3wp.exe");
                 FileVersionInfo versionInfo = FileVersionInfo.GetVersionInfo(w3wpPath);
                 OutputStatus(String.Format("w3wp (IIS) version: {0}", versionInfo.FileVersion));
