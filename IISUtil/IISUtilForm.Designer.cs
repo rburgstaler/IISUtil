@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
-            this.tbOutput = new System.Windows.Forms.TextBox();
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.panel2 = new System.Windows.Forms.Panel();
             this.btGetPossibleArguments = new System.Windows.Forms.Button();
@@ -38,6 +37,7 @@
             this.tbArguments = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
+            this.tbOutput = new System.Windows.Forms.RichTextBox();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -45,26 +45,13 @@
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.label2);
             this.panel1.Controls.Add(this.tbOutput);
+            this.panel1.Controls.Add(this.label2);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel1.Location = new System.Drawing.Point(0, 417);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(828, 248);
             this.panel1.TabIndex = 5;
-            // 
-            // tbOutput
-            // 
-            this.tbOutput.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.tbOutput.Location = new System.Drawing.Point(12, 23);
-            this.tbOutput.Multiline = true;
-            this.tbOutput.Name = "tbOutput";
-            this.tbOutput.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.tbOutput.Size = new System.Drawing.Size(804, 213);
-            this.tbOutput.TabIndex = 2;
-            this.tbOutput.WordWrap = false;
             // 
             // splitter1
             // 
@@ -146,6 +133,17 @@
             this.label2.TabIndex = 6;
             this.label2.Text = "Output";
             // 
+            // tbOutput
+            // 
+            this.tbOutput.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbOutput.Location = new System.Drawing.Point(12, 23);
+            this.tbOutput.Name = "tbOutput";
+            this.tbOutput.Size = new System.Drawing.Size(804, 213);
+            this.tbOutput.TabIndex = 7;
+            this.tbOutput.Text = "";
+            // 
             // IISUtilForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -171,7 +169,6 @@
         #endregion
 
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.TextBox tbOutput;
         private System.Windows.Forms.Splitter splitter1;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Button btGetPossibleArguments;
@@ -180,6 +177,7 @@
         private System.Windows.Forms.TextBox tbArguments;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.RichTextBox tbOutput;
 
     }
 }

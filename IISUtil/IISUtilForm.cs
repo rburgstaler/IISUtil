@@ -8,6 +8,7 @@ using Microsoft.Web.Administration;
 using System.Text.RegularExpressions;
 using System.Linq;
 using System.Reflection;
+using System.Drawing;
 
 namespace IISUtil
 {
@@ -77,12 +78,12 @@ namespace IISUtil
 
         public void OutputError(String errorMessage)
         {
-            tbOutput.Text += errorMessage + Environment.NewLine;
+            AppendOuputText(errorMessage + Environment.NewLine, Color.Red);
             Console.Error.WriteLine(errorMessage);
         }
         public void OutputStatus(String statusMessage)
         {
-            tbOutput.Text += statusMessage + Environment.NewLine;
+            AppendOuputText(statusMessage + Environment.NewLine, Color.Black);
             Console.WriteLine(statusMessage);
         }
 
@@ -96,6 +97,17 @@ namespace IISUtil
         {
             File.WriteAllText(StoreFile, tbArguments.Text);
         }
+
+        private void AppendOuputText(string text, Color color)
+        {
+            tbOutput.SelectionStart = tbOutput.TextLength;
+            tbOutput.SelectionLength = 0;
+
+            tbOutput.SelectionColor = color;
+            tbOutput.AppendText(text);
+            tbOutput.SelectionColor = tbOutput.ForeColor;
+        }
+
     }
 
 }
