@@ -18,13 +18,13 @@ namespace IISUtil
         
         public static Boolean GetParam(String[] sArgs, String AOption, ref String AParamValue)
         {
-            Regex reg = new Regex(@"^[-/](\w+)");
+            Regex reg = new Regex(@"^(-|/|--)(\w+)");
             String prefixedOption = AOption;
             AParamValue = "";
             for (int x = 0; x < sArgs.Length; x++)
             {
                 MatchCollection mc = reg.Matches(sArgs[x]);
-                if ((mc.Count >0) && (mc[0].Groups.Count>1) && (String.Compare(AOption, mc[0].Groups[1].Value, true)) == 0)
+                if ((mc.Count >0) && (mc[0].Groups.Count>2) && (String.Compare(AOption, mc[0].Groups[2].Value, true)) == 0)
                 {
                     if ((x + 1) < sArgs.Length) AParamValue = sArgs[x + 1];
                     //The result is true whether there is a corresponding value or not
