@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace IISUtil
 {
@@ -14,13 +15,16 @@ namespace IISUtil
             return GetParam(sArgs, AOption, ref dummy);
 
         }
+        
         public static Boolean GetParam(String[] sArgs, String AOption, ref String AParamValue)
         {
+            Regex reg = new Regex(@"^[-/](\w+)");
             String prefixedOption = AOption;
             AParamValue = "";
             for (int x = 0; x < sArgs.Length; x++)
             {
-                if (String.Compare(AOption, sArgs[x], true) == 0)
+                MatchCollection mc = reg.Matches(sArgs[x]);
+                if ((mc.Count >0) && (mc[0].Groups.Count>1) && (String.Compare(AOption, mc[0].Groups[1].Value, true)) == 0)
                 {
                     if ((x + 1) < sArgs.Length) AParamValue = sArgs[x + 1];
                     //The result is true whether there is a corresponding value or not
@@ -39,7 +43,7 @@ namespace IISUtil
             String paramVal = "";
             foreach (PropertyInfo pi in pos)
             {
-                if (GetParam(sArgs, "-" + pi.Name, ref paramVal))
+                if (GetParam(sArgs, pi.Name, ref paramVal))
                 {
                     pi.SetValue(obj, paramVal, null);
                     retVal = true;
