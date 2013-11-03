@@ -156,7 +156,7 @@
             this.Controls.Add(this.splitter1);
             this.Controls.Add(this.panel1);
             this.Name = "IISUtilForm";
-            this.Text = "Form1";
+            this.Text = "IIS Utility";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.IISUtilForm_FormClosed);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.panel1.ResumeLayout(false);

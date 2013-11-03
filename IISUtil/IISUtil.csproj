@@ -70,6 +70,7 @@
     <Compile Include="CommandLineParser.cs" />
     <Compile Include="CommandParams.cs" />
     <Compile Include="CommandProcessor.cs" />
+    <Compile Include="ExampleConfigCode.cs" />
     <Compile Include="IISUtilForm.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -25,32 +25,6 @@ namespace IISUtil
             ProcessArguments(args); 
         }
 
-        private void MinimumAspDotNet4onIIS6ConfigExample()
-        {
-            string serverComment = "zzz";
-            string path = @"C:\Inetpub\zzz";
-            string serverBindings = "http::80:zzz.cordonco.com;https::443:zzz.cordonco.com";
-            string appPool = "DotNet4AppPool";
-
-
-            Directory.CreateDirectory(path);
-            IISWMISite site = IISWMISite.CreateNewSite(serverComment, serverBindings, path);
-            site.SetBindings(serverBindings);
-            site.DefaultDoc = "index.aspx";
-            site.AccessFlags = AccessFlags.AccessRead | AccessFlags.AccessExecute;
-            site.AuthFlags = AuthFlags.AuthNTLM | AuthFlags.AuthAnonymous;
-            site.AppPoolId = appPool;
-            site.SetASPDotNetVersion(AspDotNetVersion.AspNetV4);
-            try
-            {
-                site.Start();
-            }
-            catch (Exception exp)
-            {
-                OutputError(exp.Message);
-            }
-        }
-
         private void ProcessArguments(String[] CmdArguments)
         {
             CommandParams cp = new CommandParams();
