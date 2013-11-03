@@ -62,12 +62,17 @@ namespace IISUtil
             proc.Run(cp);
         }
 
+        private String StoreFile
+        {
+            get
+            {
+                return Path.Combine(Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath), "Store.txt");
+            }        
+        }
+
         private void Form1_Load(object sender, EventArgs e)
         {
-
-            string w3wpPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), @"inetsrv\w3wp.exe");
-            FileVersionInfo versionInfo = FileVersionInfo.GetVersionInfo(w3wpPath);
-            OutputStatus(String.Format("w3wp (IIS) version: {0}", versionInfo.FileVersion));
+            if (File.Exists(StoreFile)) tbArguments.Text = File.ReadAllText(StoreFile);
 
             //If at least one of the values that we need exists... then we will assume that the user wants this run as a command line tool.
             //but this needs to be reworked to handle the determination differently... Wasted processing as it is because it does
@@ -98,12 +103,12 @@ namespace IISUtil
 
         public void OutputError(String errorMessage)
         {
-            textBox1.Text += errorMessage + Environment.NewLine;
+            tbOutput.Text += errorMessage + Environment.NewLine;
             Console.Error.WriteLine(errorMessage);
         }
         public void OutputStatus(String statusMessage)
         {
-            textBox1.Text += statusMessage + Environment.NewLine;
+            tbOutput.Text += statusMessage + Environment.NewLine;
             Console.WriteLine(statusMessage);
         }
 
@@ -111,6 +116,11 @@ namespace IISUtil
         {
             PropertyInfo[] fis = typeof(CommandParams).GetProperties();
             tbArguments.Text = String.Join(Environment.NewLine, fis.Select(t => "-" + t.Name).ToArray());
+        }
+
+        private void IISUtilForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            File.WriteAllText(StoreFile, tbArguments.Text);
         }
     }
 

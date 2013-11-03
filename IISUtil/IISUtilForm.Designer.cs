@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.tbOutput = new System.Windows.Forms.TextBox();
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.panel2 = new System.Windows.Forms.Panel();
             this.btGetPossibleArguments = new System.Windows.Forms.Button();
@@ -46,30 +46,30 @@
             // panel1
             // 
             this.panel1.Controls.Add(this.label2);
-            this.panel1.Controls.Add(this.textBox1);
+            this.panel1.Controls.Add(this.tbOutput);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel1.Location = new System.Drawing.Point(0, 421);
+            this.panel1.Location = new System.Drawing.Point(0, 417);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(828, 244);
+            this.panel1.Size = new System.Drawing.Size(828, 248);
             this.panel1.TabIndex = 5;
             // 
-            // textBox1
+            // tbOutput
             // 
-            this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.tbOutput.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox1.Location = new System.Drawing.Point(12, 23);
-            this.textBox1.Multiline = true;
-            this.textBox1.Name = "textBox1";
-            this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBox1.Size = new System.Drawing.Size(804, 209);
-            this.textBox1.TabIndex = 2;
-            this.textBox1.WordWrap = false;
+            this.tbOutput.Location = new System.Drawing.Point(12, 23);
+            this.tbOutput.Multiline = true;
+            this.tbOutput.Name = "tbOutput";
+            this.tbOutput.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.tbOutput.Size = new System.Drawing.Size(804, 213);
+            this.tbOutput.TabIndex = 2;
+            this.tbOutput.WordWrap = false;
             // 
             // splitter1
             // 
             this.splitter1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.splitter1.Location = new System.Drawing.Point(0, 411);
+            this.splitter1.Location = new System.Drawing.Point(0, 407);
             this.splitter1.Name = "splitter1";
             this.splitter1.Size = new System.Drawing.Size(828, 10);
             this.splitter1.TabIndex = 6;
@@ -112,7 +112,7 @@
             this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel3.Location = new System.Drawing.Point(0, 59);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(828, 352);
+            this.panel3.Size = new System.Drawing.Size(828, 348);
             this.panel3.TabIndex = 8;
             // 
             // tbArguments
@@ -124,7 +124,7 @@
             this.tbArguments.Multiline = true;
             this.tbArguments.Name = "tbArguments";
             this.tbArguments.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.tbArguments.Size = new System.Drawing.Size(804, 322);
+            this.tbArguments.Size = new System.Drawing.Size(804, 318);
             this.tbArguments.TabIndex = 4;
             this.tbArguments.WordWrap = false;
             // 
@@ -157,6 +157,7 @@
             this.Controls.Add(this.panel1);
             this.Name = "IISUtilForm";
             this.Text = "Form1";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.IISUtilForm_FormClosed);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
@@ -170,7 +171,7 @@
         #endregion
 
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox tbOutput;
         private System.Windows.Forms.Splitter splitter1;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Button btGetPossibleArguments;

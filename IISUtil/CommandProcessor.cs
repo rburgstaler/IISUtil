@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Diagnostics;
+using System.IO;
 
 namespace IISUtil
 {
@@ -36,6 +38,10 @@ namespace IISUtil
         {
             try
             {
+                string w3wpPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), @"inetsrv\w3wp.exe");
+                FileVersionInfo versionInfo = FileVersionInfo.GetVersionInfo(w3wpPath);
+                OutputStatus(String.Format("w3wp (IIS) version: {0}", versionInfo.FileVersion));
+
                 //First we want to check if we need to delete a site
                 if (cp.DeleteSite != null)
                 {
