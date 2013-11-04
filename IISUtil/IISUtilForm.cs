@@ -122,7 +122,9 @@ namespace IISUtil
             binding.BindingInformation = String.Format("*:80:{0}.burgstaler.com", siteName);
             mySite.Bindings.Add(binding);
             //mySite.Bindings.Add("http:*:80:ddd.burgstaler.com", "http");
-            if (serverMgr.ApplicationPools[siteName] == null) serverMgr.ApplicationPools.Add(siteName);
+            ApplicationPool appPool = serverMgr.ApplicationPools[siteName];
+            appPool = appPool ?? serverMgr.ApplicationPools.Add(siteName);
+            appPool.ManagedRuntimeVersion = "v4.0"; //v1.0, v2.0
             mySite.ApplicationDefaults.ApplicationPoolName = siteName;
             //mySite.TraceFailedRequestsLogging.Enabled = true;
             //mySite.TraceFailedRequestsLogging.Directory = "C:\\inetpub\\customfolder\\site";
@@ -134,18 +136,25 @@ namespace IISUtil
             //see this error, it is produced by output routine. Both site and pool are succesfully created, but State field of their PS 
             //representation needs runtime object that wasn't created by WAS yet.
             //He said that would be fixed soon, but apparently that did not take place yet so we will work around it.
-            System.Threading.Thread.Sleep(1000);
-            try
+            DateTime giveUpAfter = DateTime.Now.AddSeconds(3);
+            while (true)
             {
-                mySite.Start();
+                try
+                {
+                    mySite.Start();
+                    break;
+                }
+                catch (Exception exp)
+                {
+                    if (DateTime.Now > giveUpAfter)
+                    {
+                        //throw new Exception(String.Format("Inner error: {0} Outer error: {1}", (exp.InnerException != null) ? exp.InnerException.Message : "No inner exception", exp.Message));
+                        OutputError(String.Format("Inner error: {0} Outer error: {1}", (exp.InnerException != null) ? exp.InnerException.Message : "No inner exception", exp.Message));
+                        break;
+                    }
+                }
+                System.Threading.Thread.Sleep(250);
             }
-            catch (Exception exp)
-            {
-                //throw new Exception(String.Format("Inner error: {0} Outer error: {1}", (exp.InnerException != null) ? exp.InnerException.Message : "No inner exception", exp.Message));
-                OutputError(String.Format("Inner error: {0} Outer error: {1}", (exp.InnerException != null) ? exp.InnerException.Message : "No inner exception", exp.Message));
-            }
-
-
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -156,6 +165,12 @@ namespace IISUtil
             {
                 s1.Stop();
                 serverMgr.Sites.Remove(s1);
+                serverMgr.CommitChanges();
+            }
+            ApplicationPool appPool = serverMgr.ApplicationPools[siteName];
+            if (appPool != null)
+            {
+                serverMgr.ApplicationPools.Remove(appPool);
                 serverMgr.CommitChanges();
             }
 
