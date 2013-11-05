@@ -15,6 +15,7 @@ namespace IISUtil
     {
         public static bool TryGetSiteID(IISIdentifier Identifier, ref String SiteId)
         {
+            if (!(Identifier is IISServerCommentIdentifier)) throw new Exception(String.Format("IISIdentifier's of type {0} are not yet supported in TryGetSiteID", Identifier.GetType().Name));
             DirectoryEntry iis = GetIIsWebService();
             foreach (DirectoryEntry entry in iis.Children)
             {
@@ -46,7 +47,7 @@ namespace IISUtil
         }
     }
 
-    public class IISWMISite
+    public class IISWMISite : IISSite
     {
         public static bool DeleteSite(IISIdentifier siteIdentifier)
         {
@@ -66,14 +67,11 @@ namespace IISUtil
         public static IISWMISite CreateNewSite(String serverComment, String serverBindings, String filePath)
         {
             Directory.CreateDirectory(filePath);
+            IISWMISite retVal = new IISWMISite();
             //Do not put any bindings in... we will do that after the site is create
-            object id = (object)IISWMIHelper.GetIIsWebService().Invoke("CreateNewSite", serverComment, new object[0], filePath);
-
-
-            return new IISWMISite()
-            {
-                SiteId = Convert.ToString(id)
-            };
+            retVal.SiteId = Convert.ToString(IISWMIHelper.GetIIsWebService().Invoke("CreateNewSite", serverComment, new object[0], filePath));
+            retVal.SetBindings(serverBindings);
+            return retVal;
         }
 
         //Return null if the site is not to be found
@@ -93,7 +91,7 @@ namespace IISUtil
 
         //http::80:www.abcdefg.com
         //https::443:www.abcdefg.com
-        public void SetBindings(String siteBindings)
+        public override void SetBindings(String siteBindings)
         {
             DirectoryEntry webServer = new DirectoryEntry(String.Format("IIS://localhost/w3svc/{0}", SiteId));
 
@@ -120,7 +118,7 @@ namespace IISUtil
             webServer.CommitChanges();
         }
 
-        public void Start()
+        public override void Start()
         {
             try
             {
@@ -144,7 +142,7 @@ namespace IISUtil
             virDir.CommitChanges();
         }
 
-        public String DefaultDoc
+        public override String DefaultDoc
         {
             get
             {
@@ -156,7 +154,7 @@ namespace IISUtil
             }
         }
 
-        public String AppPoolId
+        public override String AppPoolId
         {
             get
             {
@@ -168,7 +166,7 @@ namespace IISUtil
             }
         }
 
-        public Int32 AccessFlags
+        public override Int32 AccessFlags
         {
             get
             {
@@ -180,7 +178,7 @@ namespace IISUtil
             }
         }
 
-        public Int32 AuthFlags
+        public override Int32 AuthFlags
         {
             get
             {
@@ -192,7 +190,7 @@ namespace IISUtil
             }
         }
 
-        public void SetASPDotNetVersion(AspDotNetVersion version)
+        public override void SetASPDotNetVersion(AspDotNetVersion version)
         {
             DirectoryEntry virDir = IISWMIHelper.GetIIsWebVirtualDir(SiteId);
             ScriptMapper.SetASPNetVersion(virDir, version);
@@ -218,7 +216,17 @@ namespace IISUtil
     
     public class IISBinding
     {
-        public String Protocol { get; set; }
+        String _Protocol = "http";
+        public String Protocol {
+            get
+            {
+                return _Protocol;
+            }
+            set
+            {
+                _Protocol = (String.IsNullOrEmpty(value)) ? "http" : value.ToLower();
+            }
+        }
         public String IP { get; set; }
         public String Port { get; set; }
         public String Host { get; set; }
@@ -234,7 +242,15 @@ namespace IISUtil
         {
             get
             {
-                return String.Format("{0}:{1}:{2}", IP, Port, Host);
+                return String.Format("{0}:{1}:{2}", (IP == "*") ? "" : IP, Port, Host);
+            }
+        }
+        //Server manager compatible bind string format (does not include the protocol)
+        public String SMBindString
+        {
+            get
+            {
+                return String.Format("{0}:{1}:{2}", (IP == "") ? "*" : IP, Port, Host);
             }
         }
     }
@@ -353,12 +369,7 @@ namespace IISUtil
         public const int AuthPassport = 0x00000040;
     }
 
-    public enum AspDotNetVersion
-    {
-        //These values MUST match the values in AspDotNetVersionConst.  This approach might be a bad programming practice
-        AspNetV1, AspNetV11, AspNetV2, AspNetV4
-    }
-    public static class AspDotNetVersionConst
+    public static class AspDotNetWMIVersionConst
     {
         public const string AspNetV1 = "1.0.3705";
         public const string AspNetV11 = "1.1.4322";
@@ -367,7 +378,7 @@ namespace IISUtil
 
         public static String VersionString(AspDotNetVersion version)
         {
-            FieldInfo fi = typeof(AspDotNetVersionConst).GetField(version.ToString());
+            FieldInfo fi = typeof(AspDotNetWMIVersionConst).GetField(version.ToString());
             return (fi == null) ? "" : Convert.ToString(fi.GetValue(null));
         }
     }
@@ -376,7 +387,7 @@ namespace IISUtil
     {
         public static void SetASPNetVersion(DirectoryEntry siteDE, AspDotNetVersion newVersion)
         {
-            String targetAspNetVersion = AspDotNetVersionConst.VersionString(newVersion);
+            String targetAspNetVersion = AspDotNetWMIVersionConst.VersionString(newVersion);
 
             //Need to initialize the script maps for the first time if not setup yet
             if (siteDE.Properties["ScriptMaps"].Count == 0)
@@ -389,10 +400,10 @@ namespace IISUtil
             for (int i = 0; i < siteDE.Properties["ScriptMaps"].Count; i++)
             {
                 //replace the versions if they exists
-                siteDE.Properties["ScriptMaps"][i] = siteDE.Properties["ScriptMaps"][i].ToString().Replace(AspDotNetVersionConst.AspNetV1, targetAspNetVersion);
-                siteDE.Properties["ScriptMaps"][i] = siteDE.Properties["ScriptMaps"][i].ToString().Replace(AspDotNetVersionConst.AspNetV11, targetAspNetVersion);
-                siteDE.Properties["ScriptMaps"][i] = siteDE.Properties["ScriptMaps"][i].ToString().Replace(AspDotNetVersionConst.AspNetV2, targetAspNetVersion);
-                siteDE.Properties["ScriptMaps"][i] = siteDE.Properties["ScriptMaps"][i].ToString().Replace(AspDotNetVersionConst.AspNetV4, targetAspNetVersion);
+                siteDE.Properties["ScriptMaps"][i] = siteDE.Properties["ScriptMaps"][i].ToString().Replace(AspDotNetWMIVersionConst.AspNetV1, targetAspNetVersion);
+                siteDE.Properties["ScriptMaps"][i] = siteDE.Properties["ScriptMaps"][i].ToString().Replace(AspDotNetWMIVersionConst.AspNetV11, targetAspNetVersion);
+                siteDE.Properties["ScriptMaps"][i] = siteDE.Properties["ScriptMaps"][i].ToString().Replace(AspDotNetWMIVersionConst.AspNetV2, targetAspNetVersion);
+                siteDE.Properties["ScriptMaps"][i] = siteDE.Properties["ScriptMaps"][i].ToString().Replace(AspDotNetWMIVersionConst.AspNetV4, targetAspNetVersion);
             }
 
             siteDE.CommitChanges();

@@ -99,11 +99,11 @@ namespace IISUtil
             tbOutput.SelectionColor = tbOutput.ForeColor;
         }
 
-        String siteName = "Test4";
+        String siteName = "GitWebApp";
         private void button1_Click(object sender, EventArgs e)
         {
 
-            String path = String.Format(@"C:\inetpub\{0}", siteName);
+            String path = String.Format(@"D:\Dev\Git-Web-Access\GitTools.WebApp", siteName);
             //Get caught up with the IIS7-8.5 ServerManager so that we can start integrating that bad boy in
             ServerManager serverMgr = new ServerManager();
 
