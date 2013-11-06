@@ -11,6 +11,19 @@ namespace IISUtil
     //IIS 6 did not yet support the new ServerManager component that is available in newer version
     //Instead we need to make use of the WMI (Windows Management Instrumentation) to make modifications
     //to the IIS configuration.
+    public class IISWMI : IIS
+    {
+        public override IISSite CreateNewSite(IISServerCommentIdentifier serverComment, String serverBindings, String filePath)
+        {
+            return IISWMISite.CreateNewSite(serverComment.Value, serverBindings, filePath);
+        }
+
+        public override bool DeleteSite(IISIdentifier siteIdentifier)
+        {
+            return IISWMISite.DeleteSite(siteIdentifier);
+        }
+    }
+
     public class IISWMIHelper
     {
         public static bool TryGetSiteID(IISIdentifier Identifier, ref String SiteId)
@@ -63,7 +76,7 @@ namespace IISUtil
             return false;
         }
 
-        public String SiteId { get; set; }
+        public override String SiteId { get; set; }
         public static IISWMISite CreateNewSite(String serverComment, String serverBindings, String filePath)
         {
             Directory.CreateDirectory(filePath);

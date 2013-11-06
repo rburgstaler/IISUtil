@@ -3,9 +3,43 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Diagnostics;
 
 namespace IISUtil
 {
+    public abstract class IIS
+    {
+        //The following method determines whether WMI or ServerManager based logic
+        //is required.
+        private static IIS _IIS = null;
+        public static IIS Tools
+        {
+            get
+            {
+                if (_IIS == null)
+                {
+                    if (Version.ProductMajorPart < 8) _IIS = new IISWMI();
+                    else _IIS = new IISSM();
+                }
+                return _IIS;
+            }
+        }
+
+        public static FileVersionInfo Version
+        {
+            get
+            {
+                string w3wpPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), @"inetsrv\w3wp.exe");
+                return FileVersionInfo.GetVersionInfo(w3wpPath);
+            }
+        }
+
+        public abstract IISSite CreateNewSite(IISServerCommentIdentifier serverComment, String serverBindings, String filePath);
+        public abstract bool DeleteSite(IISIdentifier siteIdentifier);
+
+
+    }
+
     public abstract class IISSite
     {
         //http::80:www.abcdefg.com
@@ -17,6 +51,7 @@ namespace IISUtil
         public abstract Int32 AccessFlags { get; set; }
         public abstract Int32 AuthFlags { get; set; }
         public abstract void SetASPDotNetVersion(AspDotNetVersion version);
+        public abstract String SiteId { get; set; }
     }
 
     public enum AspDotNetVersion

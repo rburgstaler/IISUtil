@@ -58,22 +58,19 @@ namespace IISUtil
                     return;
                 }
 
-
-                string w3wpPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), @"inetsrv\w3wp.exe");
-                FileVersionInfo versionInfo = FileVersionInfo.GetVersionInfo(w3wpPath);
-                OutputStatus(String.Format("w3wp (IIS) version: {0}", versionInfo.FileVersion));
+                OutputStatus(String.Format("w3wp (IIS) version: {0}", IIS.Version.FileVersion));
 
                 //First we want to check if we need to delete a site
                 if (cp.DeleteSite != null)
                 {
-                    if (IISWMISite.DeleteSite(new IISServerCommentIdentifier(cp.DeleteSite))) //returns true if the site is found
+                    if (IIS.Tools.DeleteSite(new IISServerCommentIdentifier(cp.DeleteSite))) //returns true if the site is found
                         OutputStatus("Site {0} deleted", cp.DeleteSite);
                     else
                         OutputStatus("Site {0} not deleted because it was not found", cp.DeleteSite);  //does not warrant an error because that was the desired outcome
                     return;
                 }
 
-                IISWMISite site = null;
+                IISSite site = null;
                 //Check if we need to create a new site
                 if (cp.CreateSite != null)
                 {
@@ -89,7 +86,7 @@ namespace IISUtil
                     }
                     try
                     {
-                        site = IISWMISite.CreateNewSite(cp.CreateSite, cp.Bindings ?? "", cp.PhysicalPath);
+                        site = IIS.Tools.CreateNewSite(new IISServerCommentIdentifier(cp.CreateSite), cp.Bindings ?? "", cp.PhysicalPath);
                         OutputStatus("Site {0} created", cp.CreateSite);
                     }
                     catch (Exception exp)

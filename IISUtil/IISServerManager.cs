@@ -8,21 +8,30 @@ using System.Reflection;
 
 namespace IISUtil
 {
+    public class IISSM : IIS
+    {
+        public override IISSite CreateNewSite(IISServerCommentIdentifier serverComment, String serverBindings, String filePath)
+        {
+            return IISServerManagerSite.CreateNewSite(serverComment.Value, serverBindings, filePath);
+        }
+        public override bool DeleteSite(IISIdentifier siteIdentifier)
+        {
+            return IISServerManagerSite.DeleteSite(siteIdentifier);
+        }
+    }
+
     public class IISServerManagerSite : IISSite
     {
-        //public static bool DeleteSite(IISIdentifier siteIdentifier)
-        //{
-        //    String id = "";
-        //    //need to be sure that the site exists or else it can throw an error
-        //    if (IISWMIHelper.TryGetSiteID(siteIdentifier, ref id))
-        //    {
-        //        DirectoryEntry webServer = IISWMIHelper.GetIIsWebServer(id);
-        //        webServer.Invoke("Stop", null);
-        //        webServer.DeleteTree();
-        //        return true;
-        //    }
-        //    return false;
-        //}
+        public static bool DeleteSite(IISIdentifier siteIdentifier)
+        {
+            if (!(siteIdentifier is IISServerCommentIdentifier)) throw new Exception(String.Format("Identifier not yet supported {}", siteIdentifier.GetType().Name));
+            ServerManager sm = new ServerManager();
+            Site site = sm.Sites[siteIdentifier.Value];
+            if (site == null) return false;
+            site.Stop();
+            sm.Sites.Remove(site);
+            return true;
+        }
 
         ServerManager ServerMgr = new ServerManager();
         Site site;
@@ -103,6 +112,18 @@ namespace IISUtil
                 System.Threading.Thread.Sleep(250);
             }
         }
+        public override String SiteId 
+        {
+            get
+            {
+                return site.Id.ToString();
+            }
+            set
+            {
+                //Not implemented yet
+            }
+        }
+
 
         //private T GetVirtualDirPropertyDef<T>(String propertyName, T DefaultValue)
         //{

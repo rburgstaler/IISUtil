@@ -19,7 +19,7 @@ namespace IISUtil
 
 
             Directory.CreateDirectory(path);
-            IISWMISite site = IISWMISite.CreateNewSite(serverComment, serverBindings, path);
+            IISSite site = IIS.Tools.CreateNewSite(new IISServerCommentIdentifier(serverComment), serverBindings, path);
             site.SetBindings(serverBindings);
             site.DefaultDoc = "index.aspx";
             site.AccessFlags = AccessFlags.AccessRead | AccessFlags.AccessExecute;
