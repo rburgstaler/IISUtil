@@ -94,20 +94,48 @@ namespace IISUtil
         }
     }
 
+
+
     public class CommandParams
     {
+        [Documentation("Get the web site to operate on based on the server comment (also known as the name)")]
         public String FindByServerComment { get; set; }
+        [Documentation("Delete the site specified by the following parameter")]
         public String DeleteSite { get; set; }
         public String CreateSite { get; set; }
         public String PhysicalPath { get; set; }
         public String Bindings { get; set; }
         public String DefaultDoc { get; set; }
+        [Documentation("\"|\" sperated list that is used to specify Access Flags")]
+        [ValidValuesAttribute(typeof(AccessFlags))]
         public String AccessFlags { get; set; }
+        [Documentation("\"|\" sperated list that is used to specify Authorization Flags")]
+        [ValidValuesAttribute(typeof(AuthFlags))]
         public String AuthFlags { get; set; }
         public String AppPoolId { get; set; }
         public String ASPDotNetVersion { get; set; }
+        [Documentation("Start the site currently being operated on")]
         public String StartSite { get; set; }
+        [Documentation("Display parameter help")]
         public String Help { get; set; }
+    }
+
+    public class ValidValuesAttribute : Attribute
+    {
+        public Type OptionsObjectType { get; set; }
+        public ValidValuesAttribute(Type tp)
+        {
+            OptionsObjectType = tp;
+        }
+    }
+        
+    public class DocumentationAttribute : Attribute
+    {
+        public String Description { get; set; }
+        public DocumentationAttribute(String desc)
+        {
+            Description = desc;
+        }
     }
 
     public class DocHelp
@@ -116,10 +144,15 @@ namespace IISUtil
         {
             List<String> ls = new List<String>();
             PropertyInfo[] pos = objType.GetProperties();
-            String paramVal = "";
             foreach (PropertyInfo pi in pos)
             {
                 ls.Add("/"+pi.Name);
+                List<DocumentationAttribute> docs = pi.GetCustomAttributes(typeof(DocumentationAttribute), true).Cast<DocumentationAttribute>().ToList();
+                List<ValidValuesAttribute> options = pi.GetCustomAttributes(typeof(ValidValuesAttribute), true).Cast<ValidValuesAttribute>().ToList();
+                ls.AddRange(docs.Select(t => "  "+t.Description));
+
+                foreach (ValidValuesAttribute att in options)
+                    ls.Add("  Valid options: " + String.Join("|", att.OptionsObjectType.GetFields().Select(t => t.Name)));
             }
             return ls.ToArray();
         }
