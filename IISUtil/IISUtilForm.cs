@@ -21,6 +21,7 @@ namespace IISUtil
 
         private void btRun_Click(object sender, EventArgs e)
         {
+            tbOutput.Text = "";
             String cmdText = tbArguments.Text.Replace(Environment.NewLine, " ");
             String[] args = CommandLineParser.GetArguments(cmdText);
             ProcessArguments(args); 

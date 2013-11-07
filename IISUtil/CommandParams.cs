@@ -107,5 +107,22 @@ namespace IISUtil
         public String AppPoolId { get; set; }
         public String ASPDotNetVersion { get; set; }
         public String StartSite { get; set; }
+        public String Help { get; set; }
+    }
+
+    public class DocHelp
+    {
+        public static String[] GenerateHelp(Type objType)
+        {
+            List<String> ls = new List<String>();
+            PropertyInfo[] pos = objType.GetProperties();
+            String paramVal = "";
+            foreach (PropertyInfo pi in pos)
+            {
+                ls.Add("/"+pi.Name);
+            }
+            return ls.ToArray();
+        }
+
     }
 }

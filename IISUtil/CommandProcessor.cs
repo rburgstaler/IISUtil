@@ -60,6 +60,13 @@ namespace IISUtil
 
                 OutputStatus(String.Format("w3wp (IIS) version: {0}", IIS.Version.FileVersion));
 
+                if (cp.Help != null)
+                {
+                    String hlp = String.Join(Environment.NewLine, DocHelp.GenerateHelp(typeof(CommandParams)));
+                    OutputStatus(hlp);
+                    return;
+                }
+
                 //First we want to check if we need to delete a site
                 if (cp.DeleteSite != null)
                 {
