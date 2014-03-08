@@ -34,6 +34,22 @@ namespace IISUtil
             {
                 msgOut(exp.Message);
             }
-        }        
+        }
+        
+        public static String MinimumAspDotNet4onIIS85ConfigExample_CommandLine()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine(@"-DeleteSite TestSite08");
+            sb.AppendLine(@"-CreateSite TestSite16 -PhysicalPath c:\debug\TestSite08");
+            sb.AppendLine(@"-DefaultDoc index.html");
+            sb.AppendLine(@"-AccessFlags AccessRead|AccessExecute");
+            sb.AppendLine(@"-AuthFlags AuthNTLM|AuthAnonymous");
+            sb.AppendLine(@"-AppPoolId TestSite16");
+            sb.AppendLine(@"-ASPDotNetVersion AspNetV4");
+            sb.AppendLine(@"-StartSite");
+            return sb.ToString();
+        }
+
+
     }
 }

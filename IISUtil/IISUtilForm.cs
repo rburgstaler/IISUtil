@@ -100,11 +100,11 @@ namespace IISUtil
             tbOutput.SelectionColor = tbOutput.ForeColor;
         }
 
-        String siteName = "GitWebApp";
+        String siteName = "TestSite003";
         private void button1_Click(object sender, EventArgs e)
         {
 
-            String path = String.Format(@"D:\Dev\Git-Web-Access\GitTools.WebApp", siteName);
+            String path = String.Format(@"C:\Debug\TestSite003", siteName);
             //Get caught up with the IIS7-8.5 ServerManager so that we can start integrating that bad boy in
             ServerManager serverMgr = new ServerManager();
 
@@ -175,6 +175,11 @@ namespace IISUtil
                 serverMgr.CommitChanges();
             }
 
+        }
+
+        private void bt85Example_Click(object sender, EventArgs e)
+        {
+            tbArguments.Text = ExampleConfigCode.MinimumAspDotNet4onIIS85ConfigExample_CommandLine();
         }
 
     }

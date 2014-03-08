@@ -29,17 +29,18 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.tbOutput = new System.Windows.Forms.RichTextBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             this.btGetPossibleArguments = new System.Windows.Forms.Button();
             this.btRun = new System.Windows.Forms.Button();
             this.panel3 = new System.Windows.Forms.Panel();
-            this.tbArguments = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.tbOutput = new System.Windows.Forms.RichTextBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
+            this.tbArguments = new System.Windows.Forms.TextBox();
+            this.bt85Example = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -55,6 +56,26 @@
             this.panel1.Size = new System.Drawing.Size(828, 248);
             this.panel1.TabIndex = 5;
             // 
+            // tbOutput
+            // 
+            this.tbOutput.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbOutput.Location = new System.Drawing.Point(12, 23);
+            this.tbOutput.Name = "tbOutput";
+            this.tbOutput.Size = new System.Drawing.Size(804, 213);
+            this.tbOutput.TabIndex = 7;
+            this.tbOutput.Text = "";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(15, 7);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(39, 13);
+            this.label2.TabIndex = 6;
+            this.label2.Text = "Output";
+            // 
             // splitter1
             // 
             this.splitter1.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -66,6 +87,7 @@
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.bt85Example);
             this.panel2.Controls.Add(this.button2);
             this.panel2.Controls.Add(this.button1);
             this.panel2.Controls.Add(this.btGetPossibleArguments);
@@ -75,6 +97,26 @@
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(828, 59);
             this.panel2.TabIndex = 7;
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(567, 12);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(75, 23);
+            this.button2.TabIndex = 6;
+            this.button2.Text = "button2";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(455, 12);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 5;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // btGetPossibleArguments
             // 
@@ -106,19 +148,6 @@
             this.panel3.Size = new System.Drawing.Size(828, 348);
             this.panel3.TabIndex = 8;
             // 
-            // tbArguments
-            // 
-            this.tbArguments.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.tbArguments.Location = new System.Drawing.Point(12, 24);
-            this.tbArguments.Multiline = true;
-            this.tbArguments.Name = "tbArguments";
-            this.tbArguments.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.tbArguments.Size = new System.Drawing.Size(804, 318);
-            this.tbArguments.TabIndex = 4;
-            this.tbArguments.WordWrap = false;
-            // 
             // label1
             // 
             this.label1.AutoSize = true;
@@ -128,45 +157,28 @@
             this.label1.TabIndex = 5;
             this.label1.Text = "Arguments";
             // 
-            // label2
+            // tbArguments
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(15, 7);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(39, 13);
-            this.label2.TabIndex = 6;
-            this.label2.Text = "Output";
+            this.tbArguments.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbArguments.Location = new System.Drawing.Point(12, 24);
+            this.tbArguments.Multiline = true;
+            this.tbArguments.Name = "tbArguments";
+            this.tbArguments.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.tbArguments.Size = new System.Drawing.Size(804, 318);
+            this.tbArguments.TabIndex = 4;
+            this.tbArguments.WordWrap = false;
             // 
-            // tbOutput
+            // bt85Example
             // 
-            this.tbOutput.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.tbOutput.Location = new System.Drawing.Point(12, 23);
-            this.tbOutput.Name = "tbOutput";
-            this.tbOutput.Size = new System.Drawing.Size(804, 213);
-            this.tbOutput.TabIndex = 7;
-            this.tbOutput.Text = "";
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(455, 12);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 5;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(567, 12);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 6;
-            this.button2.Text = "button2";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.bt85Example.Location = new System.Drawing.Point(663, 13);
+            this.bt85Example.Name = "bt85Example";
+            this.bt85Example.Size = new System.Drawing.Size(75, 23);
+            this.bt85Example.TabIndex = 7;
+            this.bt85Example.Text = "IIS 8.5 Ex.";
+            this.bt85Example.UseVisualStyleBackColor = true;
+            this.bt85Example.Click += new System.EventHandler(this.bt85Example_Click);
             // 
             // IISUtilForm
             // 
@@ -204,6 +216,7 @@
         private System.Windows.Forms.RichTextBox tbOutput;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button bt85Example;
 
     }
 }
