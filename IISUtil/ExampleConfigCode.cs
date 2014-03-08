@@ -14,7 +14,7 @@ namespace IISUtil
         {
             string serverComment = "zzz";
             string path = @"C:\Inetpub\zzz";
-            string serverBindings = "http::80:zzz.cordonco.com;https::443:zzz.cordonco.com";
+            string serverBindings = "http::80:zzz.contoso.com;https::443:zzz.contoso.com";
             string appPool = "DotNet4AppPool";
 
 
