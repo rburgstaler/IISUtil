@@ -50,6 +50,14 @@ namespace IISUtil
             return retVal;
         }
 
+        public void CommitServerManagerChanges()
+        {
+            //Anytime we commit changes, the ServerMgr becomes read-only.  To make it writable again, create a new instance.
+            ServerMgr.CommitChanges();
+            ServerMgr = new ServerManager();
+            site = ServerMgr.Sites[site.Name];
+        }
+
         ////Return null if the site is not to be found
         //public static IISWMISite FindSite(IISIdentifier Identifier)
         //{
@@ -82,7 +90,7 @@ namespace IISUtil
                         site.Bindings.Add(binding);
                     }
                 });
-            ServerMgr.CommitChanges();
+            CommitServerManagerChanges();
         }
 
         public override void Start()
@@ -157,8 +165,9 @@ namespace IISUtil
             }
             set
             {
+                //Todo: we need to create a new application pool if one does not already exist
                 site.ApplicationDefaults.ApplicationPoolName = value;
-                ServerMgr.CommitChanges();
+                CommitServerManagerChanges();
             }
         }
 
@@ -190,7 +199,7 @@ namespace IISUtil
         {
             ApplicationPool appPool = ServerMgr.ApplicationPools[site.ApplicationDefaults.ApplicationPoolName];
             appPool.ManagedRuntimeVersion = AspDotNetServerManagerVersionConst.VersionString(version);
-            ServerMgr.CommitChanges();
+            CommitServerManagerChanges();
         }
     }
 
