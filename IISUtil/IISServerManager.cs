@@ -165,7 +165,10 @@ namespace IISUtil
             }
             set
             {
-                //Todo: we need to create a new application pool if one does not already exist
+                //First... if the specified application pool does not exist, then create one
+                ApplicationPool appPool = ServerMgr.ApplicationPools[value];
+                if (appPool==null) ServerMgr.ApplicationPools.Add(value);
+
                 site.ApplicationDefaults.ApplicationPoolName = value;
                 CommitServerManagerChanges();
             }
