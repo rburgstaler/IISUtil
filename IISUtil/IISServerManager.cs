@@ -150,7 +150,14 @@ namespace IISUtil
             }
             set
             {
-                //Not implemented yet
+                Configuration config = site.GetWebConfiguration();
+                ConfigurationElementCollection documents = config.GetSection("system.webServer/defaultDocument").GetCollection("files");
+
+                documents.Clear();
+                ConfigurationElement document = documents.CreateElement();
+                document["value"] = value;
+                documents.Add(document);
+                CommitServerManagerChanges();
             }
         }
 
