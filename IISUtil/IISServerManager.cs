@@ -83,13 +83,10 @@ namespace IISUtil
             IISBindingParser.Parse(siteBindings,
                 delegate(IISBinding iisBinding)
                 {
-                    if (iisBinding.Protocol.Equals("http", StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        Microsoft.Web.Administration.Binding binding = site.Bindings.CreateElement("binding");
-                        binding.Protocol = iisBinding.Protocol;
-                        binding.BindingInformation = iisBinding.SMBindString;
-                        site.Bindings.Add(binding);
-                    }
+                    Microsoft.Web.Administration.Binding binding = site.Bindings.CreateElement("binding");
+                    binding.Protocol = iisBinding.Protocol;
+                    binding.BindingInformation = iisBinding.SMBindString;
+                    site.Bindings.Add(binding);
                 });
             CommitServerManagerChanges();
         }
