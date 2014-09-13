@@ -110,7 +110,7 @@ namespace IISUtil
                     site = IIS.Tools.FindSite(new IISServerCommentIdentifier(cp.FindByServerComment));
                     if (site == null)
                     {
-                        OutputError(String.Format("Unable to find site. {0]", cp.FindByServerComment));
+                        OutputError(String.Format("Unable to find site \"{0}\" by server comment.", cp.FindByServerComment));
                         return;
                     }
                     else
