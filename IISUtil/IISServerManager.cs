@@ -126,7 +126,7 @@ namespace IISUtil
                 {
                     if (DateTime.Now > giveUpAfter)
                     {
-                        throw new Exception(String.Format("Inner error: {0} Outer error: {1}", (exp.InnerException != null) ? exp.InnerException.Message : "No inner exception", exp.Message));
+                        throw new Exception(String.Format("Inner error: {0} Outer error: {1}.  \r\n{2}", (exp.InnerException != null) ? exp.InnerException.Message : "No inner exception", exp.Message, exp.StackTrace));
                         break;
                     }
                 }
