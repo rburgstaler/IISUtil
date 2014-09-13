@@ -28,9 +28,8 @@ namespace IISUtil
     {
         public static IISSite FindSite(IISIdentifier Identifier)
         {
-            ServerManager sm = new ServerManager();
             IISServerManagerSite retVal = new IISServerManagerSite();
-            retVal.site = sm.Sites[Identifier.Value];
+            retVal.site = retVal.ServerMgr.Sites[Identifier.Value];
             //Return null if the site was not found
             return (retVal.site != null) ? retVal : null;
         }
