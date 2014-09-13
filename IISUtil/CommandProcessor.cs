@@ -74,7 +74,9 @@ namespace IISUtil
                         OutputStatus("Site {0} deleted", cp.DeleteSite);
                     else
                         OutputStatus("Site {0} not deleted because it was not found", cp.DeleteSite);  //does not warrant an error because that was the desired outcome
-                    return;
+
+                    //Exit out if we are not finding by site id or creating a site here
+                    if ((cp.CreateSite == null) && (cp.FindByServerComment == null)) return;
                 }
 
                 IISSite site = null;
