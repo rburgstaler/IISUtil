@@ -30,6 +30,7 @@ namespace IISUtil
             if (site == null) return false;
             site.Stop();
             sm.Sites.Remove(site);
+            sm.CommitChanges();
             return true;
         }
 
