@@ -22,6 +22,10 @@ namespace IISUtil
         {
             return IISWMISite.DeleteSite(siteIdentifier);
         }
+        public override IISSite FindSite(IISIdentifier siteIdentifier)
+        {
+            return IISWMISite.FindSite(siteIdentifier);
+        }
     }
 
     public class IISWMIHelper

@@ -107,7 +107,7 @@ namespace IISUtil
                 //If the find parameter is specified, it will override the site that may have been created
                 if (cp.FindByServerComment != null)
                 {
-                    site = IISWMISite.FindSite(new IISServerCommentIdentifier(cp.FindByServerComment));
+                    site = IIS.Tools.FindSite(new IISServerCommentIdentifier(cp.FindByServerComment));
                     if (site == null)
                     {
                         OutputError(String.Format("Unable to find site. {0]", cp.FindByServerComment));

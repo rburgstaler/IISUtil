@@ -36,7 +36,7 @@ namespace IISUtil
 
         public abstract IISSite CreateNewSite(IISServerCommentIdentifier serverComment, String serverBindings, String filePath);
         public abstract bool DeleteSite(IISIdentifier siteIdentifier);
-
+        public abstract IISSite FindSite(IISIdentifier siteIdentifier);
 
     }
 

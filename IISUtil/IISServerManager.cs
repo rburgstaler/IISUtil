@@ -18,10 +18,23 @@ namespace IISUtil
         {
             return IISServerManagerSite.DeleteSite(siteIdentifier);
         }
+        public override IISSite FindSite(IISIdentifier siteIdentifier)
+        {
+            return IISServerManagerSite.FindSite(siteIdentifier);
+        }
     }
 
     public class IISServerManagerSite : IISSite
     {
+        public static IISSite FindSite(IISIdentifier Identifier)
+        {
+            ServerManager sm = new ServerManager();
+            IISServerManagerSite retVal = new IISServerManagerSite();
+            retVal.site = sm.Sites[Identifier.Value];
+            //Return null if the site was not found
+            return (retVal.site != null) ? retVal : null;
+        }
+
         public static bool DeleteSite(IISIdentifier siteIdentifier)
         {
             if (!(siteIdentifier is IISServerCommentIdentifier)) throw new Exception(String.Format("Identifier not yet supported {}", siteIdentifier.GetType().Name));
