@@ -41,7 +41,9 @@ namespace IISUtil
             ServerManager sm = new ServerManager();
             Site site = sm.Sites[siteIdentifier.Value];
             if (site == null) return false;
-            site.Stop();
+            //if this site is in a bad state, the following calls will fail so we will just trap the exception for now
+            try { site.Stop(); }
+            catch { }
             sm.Sites.Remove(site);
             sm.CommitChanges();
             return true;
