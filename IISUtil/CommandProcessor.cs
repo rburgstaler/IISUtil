@@ -67,6 +67,11 @@ namespace IISUtil
                     return;
                 }
 
+                if (cp.GetInstalledCertificates != null)
+                {
+                    SSLCertificates.GetInstalledCertificates(OutputStatus);
+                }
+
                 //First we want to check if we need to delete a site
                 if (cp.DeleteSite != null)
                 {

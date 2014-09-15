@@ -118,6 +118,8 @@ namespace IISUtil
         public String StartSite { get; set; }
         [Documentation("Display parameter help")]
         public String Help { get; set; }
+        [Documentation("Display all certificate hashes as well as the corresponding names")]
+        public String GetInstalledCertificates { get; set; }
     }
 
     public class ValidValuesAttribute : Attribute

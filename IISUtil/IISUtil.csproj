@@ -82,6 +82,7 @@
     <Compile Include="IISWMI.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SSLCertificates.cs" />
     <EmbeddedResource Include="IISUtilForm.resx">
       <DependentUpon>IISUtilForm.cs</DependentUpon>
     </EmbeddedResource>
