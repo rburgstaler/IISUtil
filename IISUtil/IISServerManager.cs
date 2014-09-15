@@ -85,6 +85,7 @@ namespace IISUtil
                     Microsoft.Web.Administration.Binding binding = site.Bindings.CreateElement("binding");
                     binding.Protocol = iisBinding.Protocol;
                     binding.BindingInformation = iisBinding.SMBindString;
+                    if ((iisBinding.CertificateHash != "") && iisBinding.Protocol.Equals("https", StringComparison.CurrentCultureIgnoreCase)) binding.CertificateHash = SSLCertificates.HexStringToByteArray(iisBinding.CertificateHash);
                     site.Bindings.Add(binding);
                 });
             CommitServerManagerChanges();

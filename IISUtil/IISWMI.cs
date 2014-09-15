@@ -226,13 +226,21 @@ namespace IISUtil
             {
                 String[] bindParams = singleBind.Split(new String[] { ":" }, StringSplitOptions.None);
                 if (bindParams.Length < 4) throw new Exception(String.Format("Invalid binding string specified {0}, must be in http::80:www.abcdefg.com form", singleBind));
-                callBack(new IISBinding() { Protocol = bindParams[0], IP = bindParams[1], Port = bindParams[2], Host = bindParams[3] });
+                callBack(new IISBinding() { Protocol = bindParams[0], IP = bindParams[1], Port = bindParams[2], Host = bindParams[3], CertificateHash = (bindParams.Length >=5 ) ? bindParams[4] : "" });
             }
         }
     }
     
     public class IISBinding
     {
+        public IISBinding()
+        {
+            IP = "";
+            Port = "";
+            Host = "";
+            CertificateHash = "";
+        }
+
         String _Protocol = "http";
         public String Protocol {
             get
@@ -247,11 +255,12 @@ namespace IISUtil
         public String IP { get; set; }
         public String Port { get; set; }
         public String Host { get; set; }
+        public String CertificateHash { get; set; }
         public String BindString
         {
             get
             {
-                return String.Format("{0}:{1}:{2}:{3}", Protocol, IP, Port, Host);
+                return String.Format("{0}:{1}:{2}:{3}:{4}", Protocol, IP, Port, Host, CertificateHash);
             }
         }
         //IIS 6 compatible bind string format (does not include the protocol)
