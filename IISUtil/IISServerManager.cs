@@ -77,12 +77,14 @@ namespace IISUtil
         ////https:*:443:www.abcdefg.com::CertStoreName\\a03083aabcd6bdfec92214df7e885c9e1e1a864d
         public override void SetBindings(String siteBindings)
         {
-            site.Bindings.Clear();
             //We need to parse the bindings string
             IISBindingParser.Parse(siteBindings,
                 delegate(IISBinding iisBinding)
                 {
-                    Microsoft.Web.Administration.Binding binding = site.Bindings.CreateElement("binding");
+                    Binding binding = site.Bindings.FirstOrDefault<Binding>(t => t.BindingInformation.Equals(iisBinding.SMBindString, StringComparison.CurrentCultureIgnoreCase));
+                    if (binding != null) site.Bindings.Remove(binding);
+                    binding = site.Bindings.CreateElement("binding");
+
                     binding.Protocol = iisBinding.Protocol;
                     binding.BindingInformation = iisBinding.SMBindString;
                     if ((iisBinding.CertificateHash != "") && iisBinding.Protocol.Equals("https", StringComparison.CurrentCultureIgnoreCase))
