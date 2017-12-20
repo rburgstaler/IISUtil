@@ -81,7 +81,7 @@ namespace IISUtil
                         OutputStatus("Site {0} not deleted because it was not found", cp.DeleteSite);  //does not warrant an error because that was the desired outcome
 
                     //Exit out if we are not finding by site id or creating a site here
-                    if ((cp.CreateSite == null) && (cp.FindByServerComment == null)) return;
+                    if ((cp.CreateSite == null) && (cp.FindByServerComment == null) && (cp.FindByBinding == null)) return;
                 }
 
                 IISSite site = null;
@@ -121,6 +121,19 @@ namespace IISUtil
                     else
                     {
                         OutputStatus("Found site {0} with id {1}", cp.FindByServerComment, site.SiteId);
+                    }
+                }
+                else if (cp.FindByBinding != null)
+                {
+                    site = IIS.Tools.FindSite(new IISBindingIdentifier(cp.FindByBinding));
+                    if (site == null)
+                    {
+                        OutputError(String.Format("Unable to find site \"{0}\" by binding.", cp.FindByBinding));
+                        return;
+                    }
+                    else
+                    {
+                        OutputStatus("Found site {0} with id {1}", cp.FindByBinding, site.SiteId);
                     }
                 }
 

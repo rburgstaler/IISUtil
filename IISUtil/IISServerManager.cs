@@ -29,7 +29,24 @@ namespace IISUtil
         public static IISSite FindSite(IISIdentifier Identifier)
         {
             IISServerManagerSite retVal = new IISServerManagerSite();
-            retVal.site = retVal.ServerMgr.Sites[Identifier.Value];
+            if (Identifier is IISBindingIdentifier)
+            {
+                List<IISBinding> bindings = IISBindingParser.ParseToList(Identifier.Value);
+
+                foreach (Site iisSite in retVal.ServerMgr.Sites)
+                {
+                    if (retVal.site != null) break;
+                    foreach (IISBinding query in bindings)
+                    {
+                        if (retVal.site != null) break;
+                        if (iisSite.Bindings.FirstOrDefault<Binding>(b => b.BindingInformation.Equals(query.SMBindString)) != null) retVal.site = iisSite;
+                    }
+                }
+            }
+            else
+            {
+                retVal.site = retVal.ServerMgr.Sites[Identifier.Value];
+            }
             //Return null if the site was not found
             return (retVal.site != null) ? retVal : null;
         }

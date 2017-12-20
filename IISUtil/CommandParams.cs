@@ -100,6 +100,8 @@ namespace IISUtil
     {
         [Documentation("Get the web site to operate on based on the server comment (also known as the name)")]
         public String FindByServerComment { get; set; }
+        [Documentation("Get the web site that is bound to the specified binding")]
+        public String FindByBinding { get; set; }
         [Documentation("Delete the site specified by the following parameter")]
         public String DeleteSite { get; set; }
         public String CreateSite { get; set; }

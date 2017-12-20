@@ -219,6 +219,17 @@ namespace IISUtil
 
     public class IISBindingParser
     {
+        public static List<IISBinding> ParseToList(String BindStr)
+        {
+            List<IISBinding> retVal = new List<IISBinding>();
+            Parse(BindStr,
+                delegate (IISBinding iisBinding)
+                {
+                    retVal.Add(iisBinding);
+                });
+            return retVal;
+        }
+
         public static void Parse(String BindStr, IISBindingHandler callBack)
         {
             String[] bindings = BindStr.Split(new String[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
