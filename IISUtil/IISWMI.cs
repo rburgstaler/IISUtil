@@ -281,17 +281,6 @@ namespace IISUtil
         }
     }
 
-    
-
-    public class IISIdentifier
-    {
-        public String Value { get; set; }
-        public IISIdentifier(String ID)
-        {
-            Value = ID;
-        }
-    }
-
     public class IISSiteIdIdentifier : IISIdentifier { public IISSiteIdIdentifier(String ID) : base(ID) { } }
     public class IISBindingIdentifier : IISIdentifier { public IISBindingIdentifier(String ID) : base(ID) { } }
     public class IISServerCommentIdentifier : IISIdentifier { public IISServerCommentIdentifier(String ID) : base(ID) { } }

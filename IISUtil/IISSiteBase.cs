@@ -7,6 +7,15 @@ using System.Diagnostics;
 
 namespace IISUtil
 {
+    public class IISIdentifier
+    {
+        public String Value { get; set; }
+        public IISIdentifier(String ID)
+        {
+            Value = ID;
+        }
+    }
+
     public abstract class IIS
     {
         //The following method determines whether WMI or ServerManager based logic
