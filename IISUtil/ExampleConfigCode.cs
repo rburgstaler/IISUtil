@@ -40,12 +40,13 @@ namespace IISUtil
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine(@"-DeleteSite TestSite08");
-            sb.AppendLine(@"-CreateSite TestSite16 -PhysicalPath c:\debug\TestSite08");
+            sb.AppendLine(@"-CreateSite TestSite08 -PhysicalPath D:\debug\IISTest\TestSite08");
             sb.AppendLine(@"-DefaultDoc index.html");
             sb.AppendLine(@"-AccessFlags AccessRead|AccessExecute");
             sb.AppendLine(@"-AuthFlags AuthNTLM|AuthAnonymous");
-            sb.AppendLine(@"-AppPoolId TestSite16");
+            sb.AppendLine(@"-AppPoolId TestSite08");
             sb.AppendLine(@"-ASPDotNetVersion AspNetV4");
+            sb.AppendLine(@"-Bindings http::80:testsite08.internaltest.local");
             sb.AppendLine(@"-StartSite");
             return sb.ToString();
         }

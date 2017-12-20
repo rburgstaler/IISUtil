@@ -33,6 +33,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.bt85Example = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.btGetPossibleArguments = new System.Windows.Forms.Button();
@@ -40,7 +41,6 @@
             this.panel3 = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
             this.tbArguments = new System.Windows.Forms.TextBox();
-            this.bt85Example = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -97,6 +97,16 @@
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(828, 59);
             this.panel2.TabIndex = 7;
+            // 
+            // bt85Example
+            // 
+            this.bt85Example.Location = new System.Drawing.Point(657, 12);
+            this.bt85Example.Name = "bt85Example";
+            this.bt85Example.Size = new System.Drawing.Size(134, 23);
+            this.bt85Example.TabIndex = 7;
+            this.bt85Example.Text = "IIS 8.5 Example";
+            this.bt85Example.UseVisualStyleBackColor = true;
+            this.bt85Example.Click += new System.EventHandler(this.bt85Example_Click);
             // 
             // button2
             // 
@@ -169,16 +179,6 @@
             this.tbArguments.Size = new System.Drawing.Size(804, 318);
             this.tbArguments.TabIndex = 4;
             this.tbArguments.WordWrap = false;
-            // 
-            // bt85Example
-            // 
-            this.bt85Example.Location = new System.Drawing.Point(663, 13);
-            this.bt85Example.Name = "bt85Example";
-            this.bt85Example.Size = new System.Drawing.Size(75, 23);
-            this.bt85Example.TabIndex = 7;
-            this.bt85Example.Text = "IIS 8.5 Ex.";
-            this.bt85Example.UseVisualStyleBackColor = true;
-            this.bt85Example.Click += new System.EventHandler(this.bt85Example_Click);
             // 
             // IISUtilForm
             // 
