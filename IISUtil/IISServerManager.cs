@@ -89,6 +89,7 @@ namespace IISUtil
                     {
                         binding.CertificateHash = SSLCertificates.HexStringToByteArray(iisBinding.CertificateHash);
                         binding.CertificateStoreName = iisBinding.CertificateStore;
+                        if (IIS.Version.ProductMajorPart >= 8) binding.SetAttributeValue("sslFlags", 1); // Enable SNI support
                     }
                     site.Bindings.Add(binding);
                 });
