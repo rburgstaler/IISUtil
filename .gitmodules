@@ -1,0 +1,4 @@
+[submodule "ext/IISConfigTool"]
+	path = ext/IISConfigTool
+	url = https://github.com/rburgstaler/IISConfigTool.git
+	branch = master
