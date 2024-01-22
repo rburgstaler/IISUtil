@@ -47,7 +47,7 @@ namespace IISUtil
             sb.AppendLine(@"-AuthFlags AuthNTLM|AuthAnonymous");
             sb.AppendLine(@"-AppPoolId TestSite08");
             sb.AppendLine(@"-ASPDotNetVersion AspNetV4");
-            sb.AppendLine(@"-Bindings http::80:testsite08.internaltest.local");
+            sb.AppendLine(@"-Bindings https::443:testsite08.internaltest.local:WebHosting\8c7877c057ff4119dfbf92fb42ab5cebbc7ae5b1");
             sb.AppendLine(@"-StartSite");
             return sb.ToString();
         }
