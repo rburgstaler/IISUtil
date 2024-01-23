@@ -107,6 +107,7 @@ namespace IISUtil
         public String DeleteSite { get; set; }
         public String CreateSite { get; set; }
         public String PhysicalPath { get; set; }
+        [Documentation("Binding string:  http:*:80:www.abcdefg.com or https:*:443:www.abcdefg.com:CertStoreName\\a03083aabcd6bdfec92214df7e885c9e1e1a864d")]
         public String Bindings { get; set; }
         public String DefaultDoc { get; set; }
         [Documentation("\"|\" sperated list that is used to specify Access Flags")]
@@ -123,6 +124,8 @@ namespace IISUtil
         public String Help { get; set; }
         [Documentation("Display all certificate hashes as well as the corresponding names")]
         public String GetInstalledCertificates { get; set; }
+        [Documentation("Display info on all sites.")]
+        public String GetAllSites { get; set; }
     }
 
     public class ValidValuesAttribute : Attribute
