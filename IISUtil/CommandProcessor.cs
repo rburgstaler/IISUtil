@@ -212,7 +212,7 @@ namespace IISUtil
                     }
                     catch (Exception exp)
                     {
-                        OutputError(String.Format("An invalid ASPDotNetVersion value was specified. \"{0}\" is invalid.", cp.ASPDotNetVersion));
+                        OutputError(String.Format("An invalid ASPDotNetVersion value was specified. \"{0}\" is invalid. {1}", cp.ASPDotNetVersion, exp.Message));
                         return;
                     }
                     site.SetASPDotNetVersion(version);
