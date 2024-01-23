@@ -58,11 +58,5 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ext\IISConfigTool\IISConfigTool\IISConfigTool.csproj">
-      <Project>{29e83e2d-e3ad-4e20-849f-d20cc32df583}</Project>
-      <Name>IISConfigTool</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
