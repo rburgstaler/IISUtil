@@ -144,7 +144,7 @@ namespace IISUtil
                 }
 
                 //At this time if we do not have a site object... then we cannot do anything
-                if (site == null)
+                if ((site == null) && (CommandLineParamsParser.SiteIDRequired(cp)))
                 {
                     OutputError("Unable to create or find a site.  Nothing can be done until proper CreateSite or FindByXXXXX parameters have been specified.");
                     return;

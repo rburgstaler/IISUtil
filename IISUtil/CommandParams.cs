@@ -79,6 +79,20 @@ namespace IISUtil
             return retVal;
         }
 
+        //Returns true if one of the parameters specified will require the ability to lookup a site
+        public static bool SiteIDRequired(Object obj)
+        {
+            bool retVal = false;
+            PropertyInfo[] pos = obj.GetType().GetProperties();
+            foreach (PropertyInfo pi in pos)
+            {
+                List<SiteIDRequiredAttribute> siteIDRequired = pi.GetCustomAttributes(typeof(SiteIDRequiredAttribute), true).Cast<SiteIDRequiredAttribute>().ToList();
+                retVal = (pi.GetValue(obj) != null) && (siteIDRequired.Count > 0);
+                if (retVal) break;
+            }
+            return retVal;
+        }
+
         //Use a class with static methods on it to build a flag mask based on the fields in the
         //class matching the | split aFlagString values
         public static Int32 BuildFlagFromDelimString(String aFlagString, Type flagObjType)
@@ -104,19 +118,27 @@ namespace IISUtil
         [Documentation("Get the web site that is bound to the specified binding")]
         public String FindByBinding { get; set; }
         [Documentation("Delete the site specified by the following parameter")]
+        [SiteIDRequired]
         public String DeleteSite { get; set; }
         public String CreateSite { get; set; }
+        [SiteIDRequired]
         public String PhysicalPath { get; set; }
         [Documentation("Binding string:  http:*:80:www.abcdefg.com or https:*:443:www.abcdefg.com:CertStoreName\\a03083aabcd6bdfec92214df7e885c9e1e1a864d")]
+        [SiteIDRequired]
         public String Bindings { get; set; }
+        [SiteIDRequired]
         public String DefaultDoc { get; set; }
         [Documentation("\"|\" sperated list that is used to specify Access Flags")]
         [ValidValuesAttribute(typeof(AccessFlags))]
+        [SiteIDRequired]
         public String AccessFlags { get; set; }
         [Documentation("\"|\" sperated list that is used to specify Authorization Flags")]
         [ValidValuesAttribute(typeof(AuthFlags))]
+        [SiteIDRequired]
         public String AuthFlags { get; set; }
+        [SiteIDRequired]
         public String AppPoolId { get; set; }
+        [SiteIDRequired]
         public String ASPDotNetVersion { get; set; }
         [Documentation("Start the site currently being operated on")]
         public String StartSite { get; set; }
@@ -126,6 +148,10 @@ namespace IISUtil
         public String GetInstalledCertificates { get; set; }
         [Documentation("Display info on all sites.")]
         public String GetAllSites { get; set; }
+    }
+
+    public class SiteIDRequiredAttribute : Attribute
+    {
     }
 
     public class ValidValuesAttribute : Attribute
