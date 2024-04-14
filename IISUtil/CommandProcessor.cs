@@ -5,6 +5,7 @@ using System.Text;
 using System.Diagnostics;
 using System.IO;
 using IISConfigTool;
+using ACMEClientLib;
 
 namespace IISUtil
 {
@@ -231,6 +232,27 @@ namespace IISUtil
                         return;
                     }
                 }
+
+                if ((cp.ACMEv2ConfigPath != "") &&
+                    (cp.ACMEv2BaseUri != "") &&
+                    (cp.ACMEv2SignerEmail != "") &&
+                    (cp.ACMEv2DnsIdentifiers != "") &&
+                    (cp.ACMEv2CertificatePath != ""))
+                {
+                    OutputStatus("Performing ACME cert creation.");
+                    ACMEClientParams ap = new ACMEClientParams();
+                    ap.ConfigPath = cp.ACMEv2ConfigPath;
+                    ap.BaseUri = cp.ACMEv2BaseUri;
+                    ap.SignerEmail = cp.ACMEv2SignerEmail;
+                    ap.DnsIdentifiers.Delimited = cp.ACMEv2DnsIdentifiers;
+                    ap.CertificatePath = cp.ACMEv2CertificatePath;
+                    ap.StatusMsgCallback = OutputStatus;
+
+                    ACMEv2 acme = new ACMEv2();
+                    acme.par = ap;
+                    bool result = acme.GeneratePFX(ap.CertificateFileName(".pfx")).Result;
+                }
+
             }
             catch (Exception exp)
             {

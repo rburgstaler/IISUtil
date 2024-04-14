@@ -5,6 +5,7 @@ using System.Text;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using IISConfigTool;
+using ACMEClientLib;
 
 namespace IISUtil
 {
@@ -148,6 +149,17 @@ namespace IISUtil
         public String GetInstalledCertificates { get; set; }
         [Documentation("Display info on all sites.")]
         public String GetAllSites { get; set; }
+
+        [Documentation("Location to dump all ACME intermediate files to.")]
+        public String ACMEv2ConfigPath { get; set; } = "";
+        [Documentation("ACME location to use.  Examples: https://acme-staging-v02.api.letsencrypt.org/, https://acme-v02.api.letsencrypt.org/")]
+        public String ACMEv2BaseUri { get; set; } = "";
+        [Documentation("Email associate with requester of ACME cert")]
+        public String ACMEv2SignerEmail { get; set; } = "";
+        [Documentation("DNS requesting to create cert for")]
+        public String ACMEv2DnsIdentifiers { get; set; } = "";
+        [Documentation("Path to put the resulting certs to")]
+        public String ACMEv2CertificatePath { get; set; } = "";
     }
 
     public class SiteIDRequiredAttribute : Attribute
