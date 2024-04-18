@@ -121,11 +121,15 @@ namespace IISUtil
         [Documentation("Delete the site specified by the following parameter")]
         [SiteIDRequired]
         public String DeleteSite { get; set; }
+        [Documentation("Create a new site with the following parameter.")]
         public String CreateSite { get; set; }
         [SiteIDRequired]
         public String PhysicalPath { get; set; }
         [Documentation("Binding string:  http:*:80:www.abcdefg.com or https:*:443:www.abcdefg.com:CertStoreName\\a03083aabcd6bdfec92214df7e885c9e1e1a864d")]
         [SiteIDRequired]
+        [Documentation("Set the file path to the site.")]
+        public String PhysicalPath { get; set; }
+        [Documentation("Set the bindings on the selected site(s).  Example binding: https:*:443:test.contoso.com:7AB5E888366D3615778B3A56AB0E1B3AED44909F")]
         public String Bindings { get; set; }
         [SiteIDRequired]
         public String DefaultDoc { get; set; }
@@ -140,6 +144,9 @@ namespace IISUtil
         [SiteIDRequired]
         public String AppPoolId { get; set; }
         [SiteIDRequired]
+        [Documentation("Specify the AppPoolId to use for the newly setup web app.")]
+        public String AppPoolId { get; set; }
+        [Documentation("Setup the version of .NET to use.")]
         public String ASPDotNetVersion { get; set; }
         [Documentation("Start the site currently being operated on")]
         public String StartSite { get; set; }
