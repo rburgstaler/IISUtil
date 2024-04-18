@@ -116,7 +116,7 @@ namespace IISUtil
     {
         [Documentation("Get the web site to operate on based on the server comment (also known as the name)")]
         public String FindByServerComment { get; set; }
-        [Documentation("Get the web site that is bound to the specified binding")]
+        [Documentation("Get the web site that is bound to the specified binding. Example binding string:  http:*:80:www.abcdefg.com or https:*:443:www.abcdefg.com:CertStoreName\\a03083aabcd6bdfec92214df7e885c9e1e1a864d")]
         public String FindByBinding { get; set; }
         [Documentation("Delete the site specified by the following parameter")]
         [SiteIDRequired]
@@ -124,12 +124,9 @@ namespace IISUtil
         [Documentation("Create a new site with the following parameter.")]
         public String CreateSite { get; set; }
         [SiteIDRequired]
-        public String PhysicalPath { get; set; }
-        [Documentation("Binding string:  http:*:80:www.abcdefg.com or https:*:443:www.abcdefg.com:CertStoreName\\a03083aabcd6bdfec92214df7e885c9e1e1a864d")]
-        [SiteIDRequired]
         [Documentation("Set the file path to the site.")]
         public String PhysicalPath { get; set; }
-        [Documentation("Set the bindings on the selected site(s).  Example binding: https:*:443:test.contoso.com:7AB5E888366D3615778B3A56AB0E1B3AED44909F")]
+        [Documentation("Set the bindings on the selected site(s).  Example binding: Example binding string:  http:*:80:www.abcdefg.com or https:*:443:www.abcdefg.com:CertStoreName\\a03083aabcd6bdfec92214df7e885c9e1e1a864d")]
         public String Bindings { get; set; }
         [SiteIDRequired]
         public String DefaultDoc { get; set; }
@@ -142,11 +139,9 @@ namespace IISUtil
         [SiteIDRequired]
         public String AuthFlags { get; set; }
         [SiteIDRequired]
-        public String AppPoolId { get; set; }
-        [SiteIDRequired]
         [Documentation("Specify the AppPoolId to use for the newly setup web app.")]
         public String AppPoolId { get; set; }
-        [Documentation("Setup the version of .NET to use.")]
+        [Documentation("Setup the version of .NET to use. [Examples: AspNetV1, AspNetV11, AspNetV2, AspNetV4]")]
         public String ASPDotNetVersion { get; set; }
         [Documentation("Start the site currently being operated on")]
         public String StartSite { get; set; }
@@ -156,7 +151,6 @@ namespace IISUtil
         public String GetInstalledCertificates { get; set; }
         [Documentation("Display info on all sites.")]
         public String GetAllSites { get; set; }
-
         [Documentation("Location to dump all ACME intermediate files to.")]
         public String ACMEv2ConfigPath { get; set; } = "";
         [Documentation("ACME location to use.  Examples: https://acme-staging-v02.api.letsencrypt.org/, https://acme-v02.api.letsencrypt.org/")]
