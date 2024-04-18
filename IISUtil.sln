@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IISUtilCmd", "IISUtilCmd\II
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IISConfigTool", "ext\IISConfigTool\IISConfigTool\IISConfigTool.csproj", "{29E83E2D-E3AD-4E20-849F-D20CC32DF583}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ACMEClientLib", "..\ACMEClientSolution\ACMEClientLib\ACMEClientLib.csproj", "{7C9B04F5-3783-4465-A03E-9A5026D5C079}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ACMEClientLib", "..\ACMEClientLib\ACMEClientLib\ACMEClientLib.csproj", "{7C9B04F5-3783-4465-A03E-9A5026D5C079}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
