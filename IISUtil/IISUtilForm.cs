@@ -9,6 +9,8 @@ using System.Text.RegularExpressions;
 using System.Linq;
 using System.Reflection;
 using System.Drawing;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using System.Threading;
 
 namespace IISUtil
 {
@@ -19,12 +21,59 @@ namespace IISUtil
             InitializeComponent();
         }
 
+        delegate void ThreadProcType();
+        delegate void ThreadProcCaller(ThreadProcType AProc);
+        private void ThreadProc(ThreadProcType AProc)
+        {
+            if (InvokeRequired)
+            {
+                ThreadProcCaller d = new ThreadProcCaller(ThreadProc);
+                Invoke(d, new object[] { AProc });
+            }
+            else
+            {
+                AProc();
+            }
+
+        }
+
+
+        public void AppendOuputText(string text, Color color)
+        {
+            ThreadProc(
+            delegate ()
+            {
+                tbOutput.SelectionStart = tbOutput.TextLength;
+                tbOutput.SelectionLength = 0;
+
+                tbOutput.SelectionColor = color;
+                tbOutput.AppendText(text);
+                tbOutput.SelectionColor = tbOutput.ForeColor;
+            });
+        }
+
+
+
         private void btRun_Click(object sender, EventArgs e)
         {
             tbOutput.Text = "";
             String cmdText = tbArguments.Text.Replace(Environment.NewLine, " ");
             String[] args = CommandLineParser.GetArguments(cmdText);
-            ProcessArguments(args); 
+            
+            Thread thd = new Thread(new ThreadStart(
+                delegate
+                {
+                    ProcessArguments(args);
+                    ThreadProc(
+                        delegate ()
+                        {
+                            btRun.Enabled = true;
+                        });
+                }));
+
+            btRun.Enabled = false;
+            thd.Start();
+
         }
 
         private void ProcessArguments(String[] CmdArguments)
@@ -88,16 +137,6 @@ namespace IISUtil
         private void IISUtilForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             File.WriteAllText(StoreFile, tbArguments.Text);
-        }
-
-        private void AppendOuputText(string text, Color color)
-        {
-            tbOutput.SelectionStart = tbOutput.TextLength;
-            tbOutput.SelectionLength = 0;
-
-            tbOutput.SelectionColor = color;
-            tbOutput.AppendText(text);
-            tbOutput.SelectionColor = tbOutput.ForeColor;
         }
 
         String siteName = "TestSite003";
