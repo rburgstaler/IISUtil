@@ -65,9 +65,9 @@
       <Project>{7c9b04f5-3783-4465-a03e-9a5026d5c079}</Project>
       <Name>ACMEClientLib</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ext\IISConfigTool\IISConfigTool\IISConfigTool.csproj">
-      <Project>{29e83e2d-e3ad-4e20-849f-d20cc32df583}</Project>
-      <Name>IISConfigTool</Name>
+    <ProjectReference Include="..\IISUtilLib\IISUtilLib.csproj">
+      <Project>{572a15ce-d7a5-4242-b921-83037087fc49}</Project>
+      <Name>IISUtilLib</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
