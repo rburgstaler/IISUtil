@@ -95,37 +95,16 @@ namespace IISUtil
         private void Form1_Load(object sender, EventArgs e)
         {
             if (File.Exists(StoreFile)) tbArguments.Text = File.ReadAllText(StoreFile);
-
-            //If at least one of the values that we need exists... then we will assume that the user wants this run as a command line tool.
-            //but this needs to be reworked to handle the determination differently... Wasted processing as it is because it does
-            //PopulateParamObject here and in ProcessArguments().  We need to do determine a good sound way of handling the following scenarios.
-            //1.) Invalid parameters when being run from the command line --right now-->uses the valid params if they exist --should-->complain that there was bad params
-            //2.) Invalid parameters when being run from the form portion of the app --right now-->uses the valid params if they exist --should-->complain that there was bad params
-            //3.) Valid parameters when being run from the command line  --right now--> this is how it determines that it does not want to show the form
-            //4.) Valid parameters when being run from the form portion of the app --right now--> will just run
-            //----->So... we need to change the PopulateParamObject() method to a valid params method that lets us know which of the 4 scenarios above applies
-            CommandParams cp = new CommandParams();
-            if (!CommandLineParamsParser.PopulateParamObject(Environment.GetCommandLineArgs(), cp)) return;
-
-            ProcessArguments(Environment.GetCommandLineArgs());
-
-            Close();
-            // When using a winforms app with AttachConsole the app complets but there is no newline after the process stops. 
-            //This gives the newline and looks normal from the console:
-            SendKeys.SendWait("{ENTER}");
-
         }
 
 
         public void OutputError(String errorMessage)
         {
             AppendOuputText(errorMessage + Environment.NewLine, Color.Red);
-            Console.Error.WriteLine(errorMessage);
         }
         public void OutputStatus(String statusMessage)
         {
             AppendOuputText(statusMessage + Environment.NewLine, Color.Black);
-            Console.WriteLine(statusMessage);
         }
 
         private void btGetPossibleArguments_Click(object sender, EventArgs e)
