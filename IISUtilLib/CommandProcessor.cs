@@ -7,7 +7,7 @@ using System.IO;
 using IISConfigLib;
 using ACMEClientLib;
 
-namespace IISUtil
+namespace IISUtilLib
 {
 
     public delegate void MsgOut(String msg);

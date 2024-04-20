@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 using IISConfigLib;
 using ACMEClientLib;
 
-namespace IISUtil
+namespace IISUtilLib
 {
     public class CommandLineParamsParser
     {

@@ -45,15 +45,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\IISUtil\CommandLineParser.cs">
-      <Link>CommandLineParser.cs</Link>
-    </Compile>
-    <Compile Include="..\IISUtil\CommandParams.cs">
-      <Link>CommandParams.cs</Link>
-    </Compile>
-    <Compile Include="..\IISUtil\CommandProcessor.cs">
-      <Link>CommandProcessor.cs</Link>
-    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
