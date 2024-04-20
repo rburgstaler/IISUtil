@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IISConfigLib
+namespace IISUtilLib
 {
     public delegate void OutputMessage(String msg);
     public  class IISSitesInfo

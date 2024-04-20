@@ -12,10 +12,4 @@
     <ProjectReference Include="..\..\ACMEClientLib\ACMEClientLib\ACMEClientLib.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="System.DirectoryServices">
-      <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.DirectoryServices.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
 </Project>
