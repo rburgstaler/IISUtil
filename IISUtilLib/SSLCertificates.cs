@@ -63,6 +63,18 @@ namespace IISUtilLib
             (new SSLCertificates()).PrintOutAllCerts(msgOutput);
         }
 
+        //extract "*.bla.com" from "CN=*.bla.com"
+        public static String ExtractCommondName(String Subject)
+        {
+            int idx = Subject.IndexOf("CN=");
+            if (idx < 0) return Subject;
+
+            if (Subject.Length == (idx + 3)) return "";
+            if (Subject.Length > (idx + 3)) return Subject.Substring(idx + 3);
+            return Subject;
+
+        }
+
         //A good default for certificateStore is WebHosting
         public static byte[] InstallCertificate(string pfxFilename, string PFXPassword, DNSList DnsIdentifiers, String certificateStore, Action<string> StatusMsg)
         {
@@ -100,9 +112,8 @@ namespace IISUtilLib
                 certificate = new X509Certificate2(pfxFilename, PFXPassword, flags);
 
                 StringBuilder certName = new StringBuilder();
-                certName.Append(DnsIdentifiers.First());
-                if (DnsIdentifiers.Count > 1) certName.Append($"(+{DnsIdentifiers.Count - 1})");
-                certName.Append(" Expires: ").Append(certificate.NotAfter.ToString("yyyy/MM/dd HH:mm:ss"));
+                certName.Append(ExtractCommondName(certificate.Subject));
+                certName.Append(" Exp: ").Append(certificate.NotAfter.ToString("yyyy/MM/dd HH:mm:ss"));
                 certificate.FriendlyName = certName.ToString();
                 StatusMsg(certificate.FriendlyName);
 

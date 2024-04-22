@@ -35,7 +35,7 @@ namespace IISUtilLib
         public static void GetAllSites2(OutputMessage outMsg)
         {
             DNSList lst = new DNSList();
-            lst.AppendName("*.geodigital.com");
+            lst.AppendName("*.contoso.com");
             Byte[] certHash = SSLCertificates.HexStringToByteArray("7AB5E888366D3615778B3A56AB0E1B3AED44909F");
             String CertificateStore = "WebHosting";
             bool UpdateCert = false;
