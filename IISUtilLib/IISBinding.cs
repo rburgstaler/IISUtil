@@ -86,14 +86,7 @@ namespace IISUtilLib
                 return String.Format("{0}:{1}:{2}:{3}:{4}\\{5}", Protocol, IP, Port, Host, CertificateStore, CertificateHash);
             }
         }
-        //IIS 6 compatible bind string format (does not include the protocol)
-        public String WMIBindString
-        {
-            get
-            {
-                return String.Format("{0}:{1}:{2}", (IP == "*") ? "" : IP, Port, Host);
-            }
-        }
+
         //Server manager compatible bind string format (does not include the protocol)
         public String SMBindString
         {
