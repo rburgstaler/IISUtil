@@ -77,6 +77,7 @@ namespace IISUtilLib
                 if (cp.GetAllSites != null)
                 {
                     IISSitesInfo.GetAllSites(OutputStatus);
+                    IISSitesInfo.GetAllSites2(OutputStatus);
                 }
 
                 //First we want to check if we need to delete a site
