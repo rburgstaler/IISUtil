@@ -254,6 +254,13 @@ namespace IISUtilLib
                     bool result = acme.GeneratePFX(ap.CertificateFileName(".pfx")).Result;
                 }
 
+                if (cp.InstallCertPFXFileName != "")
+                {
+                    DNSList dl = new DNSList();
+                    dl.Delimited = "bla.bla.com";
+                    SSLCertificates.InstallCertificate(cp.InstallCertPFXFileName, cp.InstallCertPFXPassword, dl, cp.InstallCertStore, OutputStatus);
+                }
+
             }
             catch (Exception exp)
             {

@@ -161,6 +161,12 @@ namespace IISUtilLib
         public String ACMEv2DnsIdentifiers { get; set; } = "";
         [Documentation("Path to put the resulting certs to")]
         public String ACMEv2CertificatePath { get; set; } = "";
+        [Documentation("Filename of the pfx to install into the Windows Credential store.")]
+        public String InstallCertPFXFileName { get; set; } = "";
+        [Documentation("Password of the pfx to install into the Windows Credential store.")]
+        public String InstallCertPFXPassword { get; set; } = "";
+        [Documentation("Specify the Windows Certificate store to store the cert to.  Will default to WebHosting if it is left blank.")]
+        public String InstallCertStore { get; set; } = "";
     }
 
     public class SiteIDRequiredAttribute : Attribute
