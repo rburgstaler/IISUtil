@@ -25,15 +25,8 @@ namespace IISUtilLib
 
                 foreach (var binding in iisSite.Bindings)
                 {
-                    if (binding.Protocol.Equals("https", StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        String hashStr = BitConverter.ToString(binding.CertificateHash ?? new Byte[0]).Replace("-", "");
-                        outMsg($"Bindings: {binding.Protocol}:{binding.BindingInformation}:{binding.CertificateStoreName}\\{hashStr}");
-                    }
-                    else outMsg($"Bindings: {binding.Protocol}:{binding.BindingInformation}");
-
                     IISBinding iisB = IISBindingConverter.SMBinding2IISBinding(binding);
-                    outMsg(iisB.BindString);
+                    outMsg("Binding: " + iisB.BindString);
                 }
             }
         }
@@ -55,19 +48,19 @@ namespace IISUtilLib
 
             foreach (Site iisSite in mgr.Sites)
             {
-                outMsg(iisSite.Name);
+                outMsg("Name: " + iisSite.Name);
                 outMsg("   ID: " + iisSite.Id.ToString());
                 outMsg("   Path: " + iisSite.Applications[0].VirtualDirectories[0].PhysicalPath);
 
                 foreach (var binding in iisSite.Bindings)
                 {
                     IISBinding iisB = IISBindingConverter.SMBinding2IISBinding(binding);
-                    outMsg("  " + iisB.BindString);
+                    outMsg("   Binding: " + iisB.BindString);
 
                     bool Matches = HostUtil.AtLeastOneCertMatchesBinding(lst, binding.Host);
                     if (Matches)
                     {
-                        outMsg($"Site name: {iisSite.Name} Binding Host: {binding.Host} matches");
+                        outMsg($"==== Matching cert ===== Site name: {iisSite.Name} Binding Host: {binding.Host} matches {lst.Delimited}");
                         if (UpdateCert)
                         {
                             Byte[] oldValue = binding.CertificateHash ?? new Byte[0];
