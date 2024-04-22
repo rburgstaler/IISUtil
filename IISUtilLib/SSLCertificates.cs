@@ -26,35 +26,19 @@ namespace IISUtilLib
             PrintCerts(st2, msgOutput);
         }
 
-        public static String ByteArrayToHexString(byte[] byteArray)
+        public static string ByteArrayToHexString(byte[] byteArray)
         {
-            return BitConverter.ToString(byteArray).Replace("-", "").ToLower();
+            String retVal = BitConverter.ToString(byteArray ?? new Byte[0]).Replace("-", "").ToLower();
+            return retVal;
         }
-        public static byte[] HexStringToByteArray(String hexString)
+		
+        public static byte[] HexStringToByteArray(string hex)
         {
-            List<byte> retVal = new List<byte>();
-            StringBuilder sb = new StringBuilder();
-            for (int idx = 0; idx < hexString.Length; idx++)
-            {
-                //Get the character if it is a letter or digit
-                char chr = hexString[idx];
-                if (char.IsLetterOrDigit(chr))
-                {
-                    sb.Append(chr);
-                }
-
-                //Now do the conversion
-                //If it is time to do another conversion
-                if ((sb.Length > 0) && ((idx == (hexString.Length - 1) || (sb.Length == 2))))
-                {
-                    retVal.Add(byte.Parse(sb.ToString(), System.Globalization.NumberStyles.HexNumber));
-                    //Reset it back to zero
-                    sb.Length = 0;
-                }
-            }
-            return retVal.ToArray();
+            return Enumerable.Range(0, hex.Length)
+                             .Where(x => x % 2 == 0)
+                             .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
+                             .ToArray();
         }
-
 
         public void PrintCerts(X509Store store, SSLOutputMessage msgOutput)
         {

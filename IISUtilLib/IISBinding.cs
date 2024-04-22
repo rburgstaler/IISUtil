@@ -52,18 +52,6 @@ namespace IISUtilLib
             }
         }
 
-        public static byte[] HexStringToByteArray(string hex)
-        {
-            return Enumerable.Range(0, hex.Length)
-                             .Where(x => x % 2 == 0)
-                             .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
-                             .ToArray();
-        }
-        public static string ByteArrayToHexString(byte[] byteArray)
-        {
-            String retVal = BitConverter.ToString(byteArray ?? new Byte[0]).Replace("-", "");
-            return retVal;
-        }
     }
 
     public class IISBindingConverter
@@ -74,7 +62,7 @@ namespace IISUtilLib
             retVal.Protocol = binding.Protocol.ToLower();
             if (binding.Protocol.Equals("https", StringComparison.CurrentCultureIgnoreCase))
             {
-                retVal.CertificateHash = IISBindingParser.ByteArrayToHexString(binding.CertificateHash);
+                retVal.CertificateHash = SSLCertificates.ByteArrayToHexString(binding.CertificateHash);
                 retVal.CertificateStore = binding.CertificateStoreName ?? "";
             }
             //https://learn.microsoft.com/en-us/dotnet/api/microsoft.web.administration.binding.bindinginformation?view=iis-dotnet

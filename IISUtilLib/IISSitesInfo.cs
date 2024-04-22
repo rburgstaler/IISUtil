@@ -36,7 +36,7 @@ namespace IISUtilLib
         {
             DNSList lst = new DNSList();
             lst.AppendName("*.geodigital.com");
-            Byte[] certHash = IISBindingParser.HexStringToByteArray("7AB5E888366D3615778B3A56AB0E1B3AED44909F");
+            Byte[] certHash = SSLCertificates.HexStringToByteArray("7AB5E888366D3615778B3A56AB0E1B3AED44909F");
             String CertificateStore = "WebHosting";
             bool UpdateCert = false;
             outMsg(BitConverter.ToString(certHash));
@@ -67,7 +67,7 @@ namespace IISUtilLib
                             binding.CertificateHash = certHash;
                             binding.CertificateStoreName = CertificateStore;
                             binding.SetAttributeValue("sslFlags", 1); // Enable SNI support
-                            outMsg($"Cert: {IISBindingParser.ByteArrayToHexString(oldValue)} has been updated to {IISBindingParser.ByteArrayToHexString(certHash)} matches");
+                            outMsg($"Cert: {SSLCertificates.ByteArrayToHexString(oldValue)} has been updated to {SSLCertificates.ByteArrayToHexString(certHash)} matches");
                             changeCount++;
 
                         }
