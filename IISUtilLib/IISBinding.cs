@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Microsoft.Web.Administration;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace IISUtilLib
@@ -49,7 +51,43 @@ namespace IISUtilLib
                 callBack(cb);
             }
         }
+
+        public static byte[] HexStringToByteArray(string hex)
+        {
+            return Enumerable.Range(0, hex.Length)
+                             .Where(x => x % 2 == 0)
+                             .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
+                             .ToArray();
+        }
+        public static string ByteArrayToHexString(byte[] byteArray)
+        {
+            String retVal = BitConverter.ToString(byteArray ?? new Byte[0]).Replace("-", "");
+            return retVal;
+        }
     }
+
+    public class IISBindingConverter
+    {
+        public static IISBinding SMBinding2IISBinding(Binding binding)
+        {
+            IISBinding retVal = new IISBinding();
+            retVal.Protocol = binding.Protocol.ToLower();
+            if (binding.Protocol.Equals("https", StringComparison.CurrentCultureIgnoreCase))
+            {
+                retVal.CertificateHash = IISBindingParser.ByteArrayToHexString(binding.CertificateHash);
+                retVal.CertificateStore = binding.CertificateStoreName ?? "";
+            }
+            //https://learn.microsoft.com/en-us/dotnet/api/microsoft.web.administration.binding.bindinginformation?view=iis-dotnet
+            string[] bindParts = binding.BindingInformation.Split(new string[] { ":" }, StringSplitOptions.None);
+            if (bindParts.Length > 0) retVal.IP = bindParts[0];
+            if (bindParts.Length > 1) retVal.Port = bindParts[1];
+            if (bindParts.Length > 2) retVal.Host = bindParts[2];
+            return retVal;
+            if (bindParts.Length>0) retVal.IP = bindParts[0];
+        }
+    }
+        
+
 
     public class IISBinding
     {
@@ -83,7 +121,13 @@ namespace IISUtilLib
         {
             get
             {
-                return String.Format("{0}:{1}:{2}:{3}:{4}\\{5}", Protocol, IP, Port, Host, CertificateStore, CertificateHash);
+                StringBuilder sb = new StringBuilder();
+                sb.Append(Protocol).Append(":");
+                sb.Append((IP == "") ? "*" : IP).Append(":");
+                sb.Append(Port).Append(":");
+                sb.Append(Host);
+                if (CertificateHash != "") sb.Append(":").Append(CertificateStore).Append("\\").Append(CertificateHash);
+                return sb.ToString();
             }
         }
 
@@ -92,7 +136,11 @@ namespace IISUtilLib
         {
             get
             {
-                return String.Format("{0}:{1}:{2}", (IP == "") ? "*" : IP, Port, Host);
+                StringBuilder sb = new StringBuilder();
+                sb.Append((IP == "") ? "*" : IP).Append(":");
+                sb.Append(Port).Append(":");
+                sb.Append(Host);
+                return sb.ToString();
             }
         }
     }

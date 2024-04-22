@@ -31,23 +31,19 @@ namespace IISUtilLib
                         outMsg($"Bindings: {binding.Protocol}:{binding.BindingInformation}:{binding.CertificateStoreName}\\{hashStr}");
                     }
                     else outMsg($"Bindings: {binding.Protocol}:{binding.BindingInformation}");
+
+                    IISBinding iisB = IISBindingConverter.SMBinding2IISBinding(binding);
+                    outMsg(iisB.BindString);
                 }
             }
         }
 
-        public static byte[] StringToByteArray(string hex)
-        {
-            return Enumerable.Range(0, hex.Length)
-                             .Where(x => x % 2 == 0)
-                             .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
-                             .ToArray();
-        }
 
         public static void GetAllSites2(OutputMessage outMsg)
         {
             DNSList lst = new DNSList();
             lst.AppendName("*.geodigital.com");
-            Byte[] certHash = StringToByteArray("7AB5E888366D3615778B3A56AB0E1B3AED44909F");
+            Byte[] certHash = IISBindingParser.HexStringToByteArray("7AB5E888366D3615778B3A56AB0E1B3AED44909F");
             String CertificateStore = "WebHosting";
             bool UpdateCert = false;
             outMsg(BitConverter.ToString(certHash));
@@ -65,13 +61,8 @@ namespace IISUtilLib
 
                 foreach (var binding in iisSite.Bindings)
                 {
-                    if (binding.Protocol.Equals("https", StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        String hashStr = BitConverter.ToString(binding.CertificateHash ?? new Byte[0]).Replace("-", "");
-
-                        outMsg("  https: " + binding.Host  + (binding.CertificateStoreName ?? "") + "\\" + hashStr);
-                    }
-                    else outMsg("  http: " + binding.Host);
+                    IISBinding iisB = IISBindingConverter.SMBinding2IISBinding(binding);
+                    outMsg("  " + iisB.BindString);
 
                     bool Matches = HostUtil.AtLeastOneCertMatchesBinding(lst, binding.Host);
                     if (Matches)
@@ -83,7 +74,7 @@ namespace IISUtilLib
                             binding.CertificateHash = certHash;
                             binding.CertificateStoreName = CertificateStore;
                             binding.SetAttributeValue("sslFlags", 1); // Enable SNI support
-                            outMsg($"Cert: {BitConverter.ToString(oldValue).Replace("-", "")} has been updated to {BitConverter.ToString(certHash).Replace("-", "")} matches");
+                            outMsg($"Cert: {IISBindingParser.ByteArrayToHexString(oldValue)} has been updated to {IISBindingParser.ByteArrayToHexString(certHash)} matches");
                             changeCount++;
 
                         }
