@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using IISUtilLib;
 using ACMEClientLib;
+using Newtonsoft.Json;
 
 namespace IISUtilLib
 {
@@ -77,7 +78,8 @@ namespace IISUtilLib
                 if (cp.GetAllSites != null)
                 {
                     IISSitesInfo.GetAllSites(OutputStatus);
-                    IISSitesInfo.GetAllSites2(OutputStatus);
+                    List<IISSiteInfo> sites = IISSitesInfo.GetAllSites2(OutputStatus);
+                    OutputStatus(JsonConvert.SerializeObject(sites, Formatting.Indented));
                 }
 
                 //First we want to check if we need to delete a site
