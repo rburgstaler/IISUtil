@@ -12,27 +12,7 @@ namespace IISUtilLib
     public  class IISSitesInfo
     {
 
-        public static void GetAllSites(OutputMessage outMsg)
-        {
-
-            ServerManager mgr = new ServerManager();
-
-            foreach (Site iisSite in mgr.Sites)
-            {
-                outMsg("Name: " + iisSite.Name);
-                outMsg("ID: " + iisSite.Id.ToString());
-                outMsg("Path: " + iisSite.Applications[0].VirtualDirectories[0].PhysicalPath);
-
-                foreach (var binding in iisSite.Bindings)
-                {
-                    IISBinding iisB = IISBindingConverter.SMBinding2IISBinding(binding);
-                    outMsg("Binding: " + iisB.BindString);
-                }
-            }
-        }
-
-
-        public static List<IISSiteInfo> GetAllSites2(OutputMessage outMsg)
+        public static List<IISSiteInfo> IterateAllSites(OutputMessage outMsg)
         {
             List<IISSiteInfo> retVal = new List<IISSiteInfo>();
             DNSList lst = new DNSList();
@@ -40,7 +20,7 @@ namespace IISUtilLib
             Byte[] certHash = SSLCertificates.HexStringToByteArray("7AB5E888366D3615778B3A56AB0E1B3AED44909F");
             String CertificateStore = "WebHosting";
             bool UpdateCert = false;
-            outMsg(BitConverter.ToString(certHash));
+            //outMsg(BitConverter.ToString(certHash));
 
 
 
@@ -57,27 +37,27 @@ namespace IISUtilLib
 
                 };
 
-                outMsg("Name: " + iisSite.Name);
-                outMsg("   ID: " + iisSite.Id.ToString());
-                outMsg("   Path: " + iisSite.Applications[0].VirtualDirectories[0].PhysicalPath);
+                //outMsg("Name: " + iisSite.Name);
+                //outMsg("   ID: " + iisSite.Id.ToString());
+                //outMsg("   Path: " + iisSite.Applications[0].VirtualDirectories[0].PhysicalPath);
 
                 foreach (var binding in iisSite.Bindings)
                 {
                     IISBinding iisB = IISBindingConverter.SMBinding2IISBinding(binding);
-                    outMsg("   Binding: " + iisB.BindString);
+                    //outMsg("   Binding: " + iisB.BindString);
                     isf.Bindings.Add(iisB.BindString);
 
                     bool Matches = HostUtil.AtLeastOneCertMatchesBinding(lst, binding.Host);
                     if (Matches)
                     {
-                        outMsg($"==== Matching cert ===== Site name: {iisSite.Name} Binding Host: {binding.Host} matches {lst.Delimited}");
+                        //outMsg($"==== Matching cert ===== Site name: {iisSite.Name} Binding Host: {binding.Host} matches {lst.Delimited}");
                         if (UpdateCert)
                         {
                             Byte[] oldValue = binding.CertificateHash ?? new Byte[0];
                             binding.CertificateHash = certHash;
                             binding.CertificateStoreName = CertificateStore;
                             binding.SetAttributeValue("sslFlags", 1); // Enable SNI support
-                            outMsg($"Cert: {SSLCertificates.ByteArrayToHexString(oldValue)} has been updated to {SSLCertificates.ByteArrayToHexString(certHash)} matches");
+                            //outMsg($"Cert: {SSLCertificates.ByteArrayToHexString(oldValue)} has been updated to {SSLCertificates.ByteArrayToHexString(certHash)} matches");
                             changeCount++;
 
                         }
@@ -91,7 +71,7 @@ namespace IISUtilLib
             {
 
                 mgr.CommitChanges();
-                outMsg("Changes committed.");
+                //outMsg("Changes committed.");
             }
             return retVal;
         }

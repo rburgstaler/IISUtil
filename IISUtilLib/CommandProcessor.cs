@@ -41,6 +41,8 @@ namespace IISUtilLib
         {
             try
             {
+                JSONOutput jsOut = new JSONOutput();
+
                 //We do not want to run if there are invalid arguments... otherwise the end user
                 //will think that it ran with success when it did not
                 String[] invalids = CommandLineParamsParser.GetInvalidParams(CmdArguments, typeof(CommandParams));
@@ -61,7 +63,11 @@ namespace IISUtilLib
                     return;
                 }
 
-                OutputStatus(String.Format("w3wp (IIS) version: {0}", IIS.Version.FileVersion));
+                jsOut.IISVersionInfo = String.Format("w3wp (IIS) version: {0}", IIS.Version.FileVersion);
+
+                //We have some params where we want the console output to be able to be parsed.  
+                //We may eventually make it all able to have that done.
+                if (cp.GetAllSites == null) OutputStatus(jsOut.IISVersionInfo);
 
                 if (cp.Help != null)
                 {
@@ -77,9 +83,8 @@ namespace IISUtilLib
 
                 if (cp.GetAllSites != null)
                 {
-                    IISSitesInfo.GetAllSites(OutputStatus);
-                    List<IISSiteInfo> sites = IISSitesInfo.GetAllSites2(OutputStatus);
-                    OutputStatus(JsonConvert.SerializeObject(sites, Formatting.Indented));
+                    jsOut.Output = IISSitesInfo.IterateAllSites(OutputStatus);
+                    OutputStatus(JsonConvert.SerializeObject(jsOut, Formatting.Indented));
                 }
 
                 //First we want to check if we need to delete a site
@@ -276,5 +281,13 @@ namespace IISUtilLib
             }
 
         }
+    }
+
+    //Object that can be used to generically handle top level info about the request.
+    //per call info is at the Output level
+    public class JSONOutput
+    {
+        public String IISVersionInfo { get; set; }
+        public object Output { get; set; }
     }
 }
