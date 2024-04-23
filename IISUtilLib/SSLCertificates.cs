@@ -76,7 +76,7 @@ namespace IISUtilLib
         }
 
         //A good default for certificateStore is WebHosting
-        public static byte[] InstallCertificate(string pfxFilename, string PFXPassword, DNSList DnsIdentifiers, String certificateStore, Action<string> StatusMsg)
+        public static byte[] InstallCertificate(string pfxFilename, string PFXPassword, String certificateStore, Action<string> StatusMsg)
         {
             byte[] retVal = new byte[0];
             X509Store store = null;

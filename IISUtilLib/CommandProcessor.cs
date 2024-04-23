@@ -257,8 +257,7 @@ namespace IISUtilLib
                 if (cp.InstallCertPFXFileName != "")
                 {
                     DNSList dl = new DNSList();
-                    dl.Delimited = "bla.bla.com";
-                    SSLCertificates.InstallCertificate(cp.InstallCertPFXFileName, cp.InstallCertPFXPassword, dl, cp.InstallCertStore, OutputStatus);
+                    SSLCertificates.InstallCertificate(cp.InstallCertPFXFileName, cp.InstallCertPFXPassword, cp.InstallCertStore, OutputStatus);
                 }
 
             }
