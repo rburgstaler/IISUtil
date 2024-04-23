@@ -257,7 +257,9 @@ namespace IISUtilLib
                 if (cp.InstallCertPFXFileName != "")
                 {
                     DNSList dl = new DNSList();
-                    SSLCertificates.InstallCertificate(cp.InstallCertPFXFileName, cp.InstallCertPFXPassword, cp.InstallCertStore, OutputStatus);
+                    //Default to WebHosting if the certificate store is not specified
+                    String certStore = (cp.InstallCertStore == "") ? "WebHosting" : cp.InstallCertStore;
+                    SSLCertificates.InstallCertificate(cp.InstallCertPFXFileName, cp.InstallCertPFXPassword, certStore, OutputStatus);
                 }
 
             }
