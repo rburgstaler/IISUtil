@@ -53,14 +53,12 @@ namespace IISUtil
             });
         }
 
-
-
-        private void btRun_Click(object sender, EventArgs e)
+        private void RunCommand(String Cmd)
         {
             tbOutput.Text = "";
-            String cmdText = tbArguments.Text.Replace(Environment.NewLine, " ");
+            String cmdText = Cmd.Replace(Environment.NewLine, " ");
             String[] args = CommandLineParser.GetArguments(cmdText);
-            
+
             Thread thd = new Thread(new ThreadStart(
                 delegate
                 {
@@ -74,7 +72,11 @@ namespace IISUtil
 
             btRun.Enabled = false;
             thd.Start();
+        }
 
+        private void btRun_Click(object sender, EventArgs e)
+        {
+            RunCommand(tbArguments.Text);
         }
 
         private void ProcessArguments(String[] CmdArguments)
@@ -201,6 +203,10 @@ namespace IISUtil
             tbArguments.Text = ExampleConfigCode.MinimumAspDotNet4onIIS85ConfigExample_CommandLine();
         }
 
+        private void btGetHelp_Click(object sender, EventArgs e)
+        {
+            RunCommand("/Help");
+        }
     }
 
 }

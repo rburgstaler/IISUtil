@@ -41,6 +41,7 @@
             this.panel3 = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
             this.tbArguments = new System.Windows.Forms.TextBox();
+            this.btGetHelp = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -87,6 +88,7 @@
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.btGetHelp);
             this.panel2.Controls.Add(this.bt85Example);
             this.panel2.Controls.Add(this.button2);
             this.panel2.Controls.Add(this.button1);
@@ -100,7 +102,7 @@
             // 
             // bt85Example
             // 
-            this.bt85Example.Location = new System.Drawing.Point(657, 12);
+            this.bt85Example.Location = new System.Drawing.Point(667, 3);
             this.bt85Example.Name = "bt85Example";
             this.bt85Example.Size = new System.Drawing.Size(134, 23);
             this.bt85Example.TabIndex = 7;
@@ -110,9 +112,9 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(567, 12);
+            this.button2.Location = new System.Drawing.Point(738, 30);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
+            this.button2.Size = new System.Drawing.Size(63, 23);
             this.button2.TabIndex = 6;
             this.button2.Text = "button2";
             this.button2.UseVisualStyleBackColor = true;
@@ -120,9 +122,9 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(455, 12);
+            this.button1.Location = new System.Drawing.Point(667, 30);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.Size = new System.Drawing.Size(65, 23);
             this.button1.TabIndex = 5;
             this.button1.Text = "button1";
             this.button1.UseVisualStyleBackColor = true;
@@ -180,6 +182,16 @@
             this.tbArguments.TabIndex = 4;
             this.tbArguments.WordWrap = false;
             // 
+            // btGetHelp
+            // 
+            this.btGetHelp.Location = new System.Drawing.Point(362, 12);
+            this.btGetHelp.Name = "btGetHelp";
+            this.btGetHelp.Size = new System.Drawing.Size(169, 37);
+            this.btGetHelp.TabIndex = 8;
+            this.btGetHelp.Text = "/Help";
+            this.btGetHelp.UseVisualStyleBackColor = true;
+            this.btGetHelp.Click += new System.EventHandler(this.btGetHelp_Click);
+            // 
             // IISUtilForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -217,7 +229,7 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button bt85Example;
-
+        private System.Windows.Forms.Button btGetHelp;
     }
 }
 
