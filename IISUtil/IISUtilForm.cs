@@ -111,7 +111,7 @@ namespace IISUtil
         private void btGetPossibleArguments_Click(object sender, EventArgs e)
         {
             PropertyInfo[] fis = typeof(CommandParams).GetProperties();
-            tbArguments.Text = String.Join(Environment.NewLine, fis.Select(t => "-" + t.Name).ToArray());
+            tbOutput.Text = String.Join(Environment.NewLine, fis.Select(t => "-" + t.Name).ToArray());
         }
 
         private void IISUtilForm_FormClosed(object sender, FormClosedEventArgs e)
