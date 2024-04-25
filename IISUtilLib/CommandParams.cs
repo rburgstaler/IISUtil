@@ -167,6 +167,8 @@ namespace IISUtilLib
         public String InstallCertPFXPassword { get; set; } = "";
         [Documentation("Specify the Windows Certificate store to store the cert to.  Will default to WebHosting if it is left blank.")]
         public String InstallCertStore { get; set; } = "";
+        [Documentation("DNS query to filter out out hosts in -GetAllSites and -UpdateBindingCert. Examples: *.contoso.com, *.bla.consoto.com, bla.bla.contoso.com")]
+        public String DNSQuery { get; set; }
     }
 
     public class SiteIDRequiredAttribute : Attribute

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Web.Administration;
+using Org.BouncyCastle.X509.Store;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +21,24 @@ namespace IISUtilLib
             return retVal;
         }
 
+        //Will pull out the certificate and has for a certificate store name followed by a backslash followed by a cert hash
+        //WebHosting\7AB5E888366D3615778B3A56AB0E1B3AED44909F => CertStore = WebHosting, CertHash = 7AB5E888366D3615778B3A56AB0E1B3AED44909F
+        public static void ExtractCertParts(String CertBindingStr, out String CertStore, out String CertHash)
+        {
+            CertStore = "";
+            CertHash = "";
+            String[] certParts = CertBindingStr.Split(new String[] { "\\" }, StringSplitOptions.None);
+            if (certParts.Length >= 2)
+            {
+                CertStore = certParts[0];
+                CertHash = certParts[1];
+            }
+            else
+            {
+                CertHash = certParts[0];
+            }
+        }
+
         public static void Parse(String BindStr, IISBindingHandler callBack)
         {
             String[] bindings = BindStr.Split(new String[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
@@ -37,16 +56,10 @@ namespace IISUtilLib
                 //If a cert was specified then set that up as well
                 if (bindParams.Length >= 5)
                 {
-                    String[] CertStoreCertHash = bindParams[4].Split(new String[] { "\\" }, StringSplitOptions.None);
-                    if (CertStoreCertHash.Length >= 2)
-                    {
-                        cb.CertificateStore = CertStoreCertHash[0];
-                        cb.CertificateHash = CertStoreCertHash[1];
-                    }
-                    else
-                    {
-                        cb.CertificateHash = CertStoreCertHash[0];
-                    }
+                    String certStore, certHash;
+                    ExtractCertParts(bindParams[4], out certStore, out certHash);
+                    cb.CertificateStore = certStore;
+                    cb.CertificateHash = certHash;
                 }
                 callBack(cb);
             }

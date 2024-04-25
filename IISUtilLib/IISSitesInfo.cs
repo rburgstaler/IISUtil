@@ -11,24 +11,29 @@ namespace IISUtilLib
     public delegate void OutputMessage(String msg);
     public  class IISSitesInfo
     {
-
-        public static List<IISSiteInfo> IterateAllSites(OutputMessage outMsg)
+        //DNSQuery: will filter which sites to return in the result and will filter which hosts to set the new binding cert for
+        //UpdateToCertStoreAndHash: When DNSQuerymatches, the cert store and hash will be updated
+        public static List<IISSiteInfo> IterateAllSites(OutputMessage outMsg, String DNSQuery = null, String UpdateToCertStoreAndHash = null)
         {
             List<IISSiteInfo> retVal = new List<IISSiteInfo>();
             DNSList lst = new DNSList();
-            lst.AppendName("*.contoso.com");
-            Byte[] certHash = SSLCertificates.HexStringToByteArray("7AB5E888366D3615778B3A56AB0E1B3AED44909F");
-            String CertificateStore = "WebHosting";
-            bool UpdateCert = false;
-            //outMsg(BitConverter.ToString(certHash));
+            if (!String.IsNullOrEmpty(DNSQuery)) lst.Delimited = DNSQuery;
+            String certStore = "", certHashStr = "";
+            Byte[] certHash = new byte[0];
+            if (!String.IsNullOrEmpty(UpdateToCertStoreAndHash))
+            {
+                IISBindingParser.ExtractCertParts(DNSQuery, out certStore, out certHashStr);
+                certHash = SSLCertificates.HexStringToByteArray(certHashStr);
+                String CertificateStore = (certStore == "") ? "WebHosting" : certStore;
+            }
+            bool UpdateCert = UpdateToCertStoreAndHash != null;
 
-
-
-            int changeCount = 0;
+            int webServerChangeCount = 0;
             ServerManager mgr = new ServerManager();
 
             foreach (Site iisSite in mgr.Sites)
             {
+                int webSiteMatchCount = 0;
                 IISSiteInfo isf = new IISSiteInfo()
                 {
                     ID = iisSite.Id,
@@ -50,24 +55,26 @@ namespace IISUtilLib
                     bool Matches = HostUtil.AtLeastOneCertMatchesBinding(lst, binding.Host);
                     if (Matches)
                     {
+                        webSiteMatchCount++;
                         //outMsg($"==== Matching cert ===== Site name: {iisSite.Name} Binding Host: {binding.Host} matches {lst.Delimited}");
                         if (UpdateCert)
                         {
                             Byte[] oldValue = binding.CertificateHash ?? new Byte[0];
                             binding.CertificateHash = certHash;
-                            binding.CertificateStoreName = CertificateStore;
+                            binding.CertificateStoreName = certStore;
                             binding.SetAttributeValue("sslFlags", 1); // Enable SNI support
                             //outMsg($"Cert: {SSLCertificates.ByteArrayToHexString(oldValue)} has been updated to {SSLCertificates.ByteArrayToHexString(certHash)} matches");
-                            changeCount++;
+                            webServerChangeCount++;
 
                         }
                     }
 
                 }
-                retVal.Add(isf);
+                //Only add to the list if we 1.) want to return all [DNSQuery == null], or 2.) have matches
+                if ((DNSQuery == null) || (webSiteMatchCount > 0)) retVal.Add(isf);
 
             }
-            if (changeCount > 0)
+            if (webServerChangeCount > 0)
             {
 
                 mgr.CommitChanges();
