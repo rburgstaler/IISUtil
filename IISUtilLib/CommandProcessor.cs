@@ -67,7 +67,7 @@ namespace IISUtilLib
 
                 //We have some params where we want the console output to be able to be parsed.  
                 //We may eventually make it all able to have that done.
-                if (cp.GetAllSites == null) OutputStatus(jsOut.IISVersionInfo);
+                if ((cp.GetAllSites == null) && (cp.GetCertInfoFileName ==  null)) OutputStatus(jsOut.IISVersionInfo);
 
                 if (cp.Help != null)
                 {
@@ -278,6 +278,12 @@ namespace IISUtilLib
                     //Default to WebHosting if the certificate store is not specified
                     String certStore = (cp.InstallCertStore == "") ? "WebHosting" : cp.InstallCertStore;
                     SSLCertificates.InstallCertificate(cp.InstallCertPFXFileName, cp.InstallCertPFXPassword, certStore, OutputStatus);
+                }
+
+                if (!String.IsNullOrEmpty(cp.GetCertInfoFileName))
+                {
+                    CertInfo ci = SSLCertificates.GetCertInfo(cp.GetCertInfoFileName, cp.GetCertInfoPassword, OutputStatus);
+                    OutputStatus(JsonConvert.SerializeObject(ci, Formatting.Indented));
                 }
 
             }

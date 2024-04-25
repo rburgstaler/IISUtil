@@ -1,4 +1,5 @@
 ﻿using ACMEClientLib;
+using Org.BouncyCastle.Asn1;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -76,6 +77,25 @@ namespace IISUtilLib
         }
 
         //A good default for certificateStore is WebHosting
+        public static CertInfo GetCertInfo(string PFXFileName, string PFXPassword, Action<string> StatusMsg)
+        {
+            CertInfo retVal = new CertInfo();
+
+            // See http://paulstovell.com/blog/x509certificate2
+            X509KeyStorageFlags flags = X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet;
+            flags |= X509KeyStorageFlags.Exportable;
+            X509Certificate2 certificate = new X509Certificate2(PFXFileName, PFXPassword, flags);
+
+            retVal.FriendlyName = certificate.FriendlyName;
+            retVal.Hash.MD5 = ByteArrayToHexString(certificate.GetCertHash());
+            retVal.CommonName = ExtractCommondName(certificate.Subject);
+            retVal.NotAfter = certificate.NotAfter;
+            retVal.NotBefore = certificate.NotBefore;   
+            retVal.Subject = certificate.Subject;
+            return retVal;
+        }
+
+        //A good default for certificateStore is WebHosting
         public static byte[] InstallCertificate(string pfxFilename, string PFXPassword, String certificateStore, Action<string> StatusMsg)
         {
             byte[] retVal = new byte[0];
@@ -138,5 +158,20 @@ namespace IISUtilLib
             store.Close();
             return retVal;
         }
+    }
+
+    public class CertInfo
+    {
+        public String FriendlyName { get; set; } = "";
+        public CertHash Hash { get; } = new CertHash();
+        public String CommonName { get; set; } = "";
+        public String Subject { get; set; } = "";
+        public DateTime NotBefore { get; set; }
+        public DateTime NotAfter { get; set; }
+    }
+
+    public class CertHash
+    {
+        public String MD5 { get; set; } = "";
     }
 }

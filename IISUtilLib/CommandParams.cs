@@ -171,6 +171,10 @@ namespace IISUtilLib
         public String DNSQuery { get; set; }
         [Documentation("Update all SSL sites that match the DNSQuery parameter and set the corresponding cert store and cert hash (This is the SHA1 hash of the cert).  Example value: WebHosting\\7AB5E888366D3615778B3A56AB0E1B3AED44909F")]
         public String UpdateBindingCert { get; set; }
+        [Documentation("Return JSON object with info about the cert.  Currently only supports pfx.")]
+        public String GetCertInfoFileName { get; set; }
+        [Documentation("Password of cert file from /CertInfoFileName parameter.")]
+        public String GetCertInfoPassword { get; set; }
     }
 
     public class SiteIDRequiredAttribute : Attribute
