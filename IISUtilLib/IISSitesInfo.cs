@@ -1,5 +1,6 @@
 ﻿using ACMEClientLib;
 using Microsoft.Web.Administration;
+using Org.BouncyCastle.Utilities.Encoders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +23,7 @@ namespace IISUtilLib
             Byte[] certHash = new byte[0];
             if (!String.IsNullOrEmpty(UpdateToCertStoreAndHash))
             {
-                IISBindingParser.ExtractCertParts(DNSQuery, out certStore, out certHashStr);
+                IISBindingParser.ExtractCertParts(UpdateToCertStoreAndHash, out certStore, out certHashStr);
                 certHash = SSLCertificates.HexStringToByteArray(certHashStr);
                 String CertificateStore = (certStore == "") ? "WebHosting" : certStore;
             }
@@ -57,13 +58,13 @@ namespace IISUtilLib
                     {
                         webSiteMatchCount++;
                         //outMsg($"==== Matching cert ===== Site name: {iisSite.Name} Binding Host: {binding.Host} matches {lst.Delimited}");
-                        if (UpdateCert)
+                        if (UpdateCert && (iisB.Protocol.Equals("https", StringComparison.CurrentCultureIgnoreCase)))
                         {
                             Byte[] oldValue = binding.CertificateHash ?? new Byte[0];
                             binding.CertificateHash = certHash;
                             binding.CertificateStoreName = certStore;
                             binding.SetAttributeValue("sslFlags", 1); // Enable SNI support
-                            //outMsg($"Cert: {SSLCertificates.ByteArrayToHexString(oldValue)} has been updated to {SSLCertificates.ByteArrayToHexString(certHash)} matches");
+                            outMsg($"({isf.ID}) - ({isf.Name}) certificate changed: {iisB.BindString} => {IISBindingConverter.SMBinding2IISBinding(binding).BindString}");
                             webServerChangeCount++;
 
                         }
@@ -78,7 +79,7 @@ namespace IISUtilLib
             {
 
                 mgr.CommitChanges();
-                //outMsg("Changes committed.");
+                outMsg($"{webServerChangeCount} certificate changes committed.");
             }
             return retVal;
         }
