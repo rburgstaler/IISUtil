@@ -14,7 +14,7 @@ namespace IISUtilCmd
             CommandProcessor proc = new CommandProcessor();
             proc.ErrorOut = Console.Error.WriteLine;
             proc.StatusOut = Console.Out.WriteLine;
-            proc.Run(args);
+            Environment.ExitCode = (proc.Run(args)) ? 0 : 1;
         }
     }
 }

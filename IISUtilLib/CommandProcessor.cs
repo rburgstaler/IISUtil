@@ -37,7 +37,7 @@ namespace IISUtilLib
             OutputStatus(String.Format(msg, par));
         }
 
-        public void Run(String[] CmdArguments)
+        public bool Run(String[] CmdArguments)
         {
             try
             {
@@ -51,7 +51,7 @@ namespace IISUtilLib
                     OutputError("Invalid argument(s) were found.");
                     foreach (String arg in invalids) OutputError("{0} is an invalid argument", arg);
                     OutputError("Fix this before continuing.");
-                    return;
+                    return false;
                 }
 
 
@@ -60,7 +60,7 @@ namespace IISUtilLib
                 if (!CommandLineParamsParser.PopulateParamObject(CmdArguments, cp))
                 {
                     OutputError("There were no valid arguments passed in.  Use --Help to determine all valid arguments.");
-                    return;
+                    return false;
                 }
 
                 jsOut.IISVersionInfo = String.Format("w3wp (IIS) version: {0}", IIS.Version.FileVersion);
@@ -73,7 +73,7 @@ namespace IISUtilLib
                 {
                     String hlp = String.Join(Environment.NewLine, DocHelp.GenerateHelp(typeof(CommandParams)));
                     OutputStatus(hlp);
-                    return;
+                    return true;
                 }
 
                 if (cp.GetInstalledCertificates != null)
@@ -94,7 +94,7 @@ namespace IISUtilLib
                     if (String.IsNullOrEmpty(cp.DNSQuery))
                     {
                         OutputStatus("DNSQuery parameter cannot be blank");
-                        return;
+                        return false;
                     }
                 }
 
@@ -107,7 +107,7 @@ namespace IISUtilLib
                         OutputStatus("Site {0} not deleted because it was not found", cp.DeleteSite);  //does not warrant an error because that was the desired outcome
 
                     //Exit out if we are not finding by site id or creating a site here
-                    if ((cp.CreateSite == null) && (cp.FindByServerComment == null) && (cp.FindByBinding == null)) return;
+                    if ((cp.CreateSite == null) && (cp.FindByServerComment == null) && (cp.FindByBinding == null)) return true;
                 }
 
                 IISSite site = null;
@@ -117,12 +117,12 @@ namespace IISUtilLib
                     if (cp.CreateSite.Trim() == "")
                     {
                         OutputError("Create site cannot specify a blank site.");
-                        return;
+                        return false;
                     }
                     if (String.IsNullOrEmpty(cp.PhysicalPath))
                     {
                         OutputError("In order to create a website, a valid \"PhysicalPath\" must be specified.");
-                        return;
+                        return false;
                     }
                     try
                     {
@@ -132,6 +132,7 @@ namespace IISUtilLib
                     catch (Exception exp)
                     {
                         OutputError("Error creating site {0}: {1}", cp.CreateSite, exp.Message);
+                        return false;
                     }
                 }
 
@@ -142,7 +143,7 @@ namespace IISUtilLib
                     if (site == null)
                     {
                         OutputError(String.Format("Unable to find site \"{0}\" by server comment.", cp.FindByServerComment));
-                        return;
+                        return false;
                     }
                     else
                     {
@@ -155,7 +156,7 @@ namespace IISUtilLib
                     if (site == null)
                     {
                         OutputError(String.Format("Unable to find site \"{0}\" by binding.", cp.FindByBinding));
-                        return;
+                        return false;
                     }
                     else
                     {
@@ -167,7 +168,7 @@ namespace IISUtilLib
                 if ((site == null) && (CommandLineParamsParser.SiteIDRequired(cp)))
                 {
                     OutputError("Unable to create or find a site.  Nothing can be done until proper CreateSite or FindByXXXXX parameters have been specified.");
-                    return;
+                    return false;
                 }
 
                 if (cp.Bindings != null)
@@ -180,7 +181,7 @@ namespace IISUtilLib
                     catch (Exception exp)
                     {
                         OutputError(String.Format("Error while setting bindings. {0}", exp.Message));
-                        return;
+                        return false;
                     }
                 }
                 if (cp.DefaultDoc != null)
@@ -201,7 +202,7 @@ namespace IISUtilLib
                     catch (Exception exp)
                     {
                         OutputError(String.Format("Error while setting AccessFlags. {0}", exp.Message));
-                        return;
+                        return false;
                     }
                 }
                 if (cp.AuthFlags != null)
@@ -214,7 +215,7 @@ namespace IISUtilLib
                     catch (Exception exp)
                     {
                         OutputError(String.Format("Error while setting AuthFlags. {0}", exp.Message));
-                        return;
+                        return false;
                     }
                 }
 
@@ -233,7 +234,7 @@ namespace IISUtilLib
                     catch (Exception exp)
                     {
                         OutputError(String.Format("An invalid ASPDotNetVersion value was specified. \"{0}\" is invalid. {1}", cp.ASPDotNetVersion, exp.Message));
-                        return;
+                        return false;
                     }
                     site.SetASPDotNetVersion(version);
                     OutputStatus("ASP DotNet version set to {0}", version);
@@ -248,7 +249,7 @@ namespace IISUtilLib
                     catch (Exception exp)
                     {
                         OutputError("Error starting site: "+exp.Message);
-                        return;
+                        return false;
                     }
                 }
 
@@ -269,7 +270,7 @@ namespace IISUtilLib
 
                     ACMEv2 acme = new ACMEv2();
                     acme.par = ap;
-                    bool result = acme.GeneratePFX(ap.CertificateFileName(".pfx")).Result;
+                    return acme.GeneratePFX(ap.CertificateFileName(".pfx")).Result;
                 }
 
                 if (cp.InstallCertPFXFileName != "")
@@ -289,13 +290,10 @@ namespace IISUtilLib
             }
             catch (Exception exp)
             {
-
-
-
-
-
                 OutputError("An exception took place during execution: " + exp.Message + exp.StackTrace);
+                return false;
             }
+            return true;
 
         }
     }

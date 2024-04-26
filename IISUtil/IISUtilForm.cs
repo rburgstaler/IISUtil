@@ -84,7 +84,7 @@ namespace IISUtil
             CommandProcessor proc = new CommandProcessor();
             proc.ErrorOut = OutputError;
             proc.StatusOut = OutputStatus;
-            proc.Run(CmdArguments);
+            if (!proc.Run(CmdArguments)) OutputError("Error on execution.");
         }
 
         private String StoreFile
