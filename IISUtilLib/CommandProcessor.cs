@@ -89,13 +89,12 @@ namespace IISUtilLib
 
                 if (cp.UpdateBindingCert != null)
                 {
-                    jsOut.Output = IISSitesInfo.IterateAllSites(OutputStatus, cp.DNSQuery, cp.UpdateBindingCert);
-
                     if (String.IsNullOrEmpty(cp.DNSQuery))
                     {
                         OutputStatus("DNSQuery parameter cannot be blank");
                         return false;
                     }
+                    jsOut.Output = IISSitesInfo.IterateAllSites(OutputStatus, cp.DNSQuery, cp.UpdateBindingCert);
                 }
 
                 //First we want to check if we need to delete a site
