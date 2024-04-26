@@ -75,12 +75,8 @@ namespace IISUtilLib
                 if ((DNSQuery == null) || (webSiteMatchCount > 0)) retVal.Add(isf);
 
             }
-            if (webServerChangeCount > 0)
-            {
-
-                mgr.CommitChanges();
-                outMsg($"{webServerChangeCount} certificate changes committed.");
-            }
+            if (webServerChangeCount > 0) mgr.CommitChanges();
+            if (UpdateCert) outMsg($"{webServerChangeCount} certificate changes committed.");
             return retVal;
         }
     }
