@@ -2,6 +2,7 @@
 using Org.BouncyCastle.Asn1;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
@@ -89,10 +90,21 @@ namespace IISUtilLib
             retVal.FriendlyName = certificate.FriendlyName;
             retVal.Hash.MD5 = ByteArrayToHexString(certificate.GetCertHash());
             retVal.CommonName = ExtractCommondName(certificate.Subject);
-            retVal.NotAfter = certificate.NotAfter;
-            retVal.NotBefore = certificate.NotBefore;   
+            retVal.NotAfter = certificate.NotAfter.ToUniversalTime();
+            retVal.NotBefore = certificate.NotBefore.ToUniversalTime();   
             retVal.Subject = certificate.Subject;
             return retVal;
+        }
+
+        public static String GetCertFriendlyName(String commonName, DateTime notBefore, DateTime notAfter)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append(commonName.Replace("*", "star"));
+            sb.Append(" Exp: ");
+            sb.Append(notAfter.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture));
+            sb.Append(" Gen: ");
+            sb.Append(notBefore.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture));
+            return sb.ToString();
         }
 
         //A good default for certificateStore is WebHosting
@@ -133,8 +145,8 @@ namespace IISUtilLib
 
                 StringBuilder certName = new StringBuilder();
                 certName.Append(ExtractCommondName(certificate.Subject));
-                certName.Append(" Exp: ").Append(certificate.NotAfter.ToString("yyyy/MM/dd HH:mm:ss"));
-                certificate.FriendlyName = certName.ToString();
+                certName.Append(" Exp: ").Append(certificate.NotAfter.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture));
+                certificate.FriendlyName = GetCertFriendlyName(ExtractCommondName(certificate.Subject), certificate.NotBefore, certificate.NotAfter);
                 StatusMsg(certificate.FriendlyName);
 
                 StatusMsg("Common Name: " + certificate.SubjectName.Name);
