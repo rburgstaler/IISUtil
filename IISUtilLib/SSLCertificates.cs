@@ -65,17 +65,6 @@ namespace IISUtilLib
             (new SSLCertificates()).PrintOutAllCerts(msgOutput);
         }
 
-        //extract "*.bla.com" from "CN=*.bla.com"
-        public static String ExtractCommondName(String Subject)
-        {
-            int idx = Subject.IndexOf("CN=");
-            if (idx < 0) return Subject;
-
-            if (Subject.Length == (idx + 3)) return "";
-            if (Subject.Length > (idx + 3)) return Subject.Substring(idx + 3);
-            return Subject;
-
-        }
 
         //A good default for certificateStore is WebHosting
         public static CertInfo GetCertInfo(string PFXFileName, string PFXPassword, Action<string> StatusMsg)
@@ -89,22 +78,11 @@ namespace IISUtilLib
 
             retVal.FriendlyName = certificate.FriendlyName;
             retVal.Hash.MD5 = ByteArrayToHexString(certificate.GetCertHash());
-            retVal.CommonName = ExtractCommondName(certificate.Subject);
+            retVal.CommonName = CertUtil.ExtractCommondName(certificate.Subject);
             retVal.NotAfter = certificate.NotAfter.ToUniversalTime();
             retVal.NotBefore = certificate.NotBefore.ToUniversalTime();   
             retVal.Subject = certificate.Subject;
             return retVal;
-        }
-
-        public static String GetCertFriendlyName(String commonName, DateTime notBefore, DateTime notAfter)
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.Append(commonName.Replace("*", "star"));
-            sb.Append(" Exp: ");
-            sb.Append(notAfter.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture));
-            sb.Append(" Gen: ");
-            sb.Append(notBefore.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture));
-            return sb.ToString();
         }
 
         //A good default for certificateStore is WebHosting
@@ -143,10 +121,7 @@ namespace IISUtilLib
                 // See http://paulstovell.com/blog/x509certificate2
                 certificate = new X509Certificate2(pfxFilename, PFXPassword, flags);
 
-                StringBuilder certName = new StringBuilder();
-                certName.Append(ExtractCommondName(certificate.Subject));
-                certName.Append(" Exp: ").Append(certificate.NotAfter.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture));
-                certificate.FriendlyName = GetCertFriendlyName(ExtractCommondName(certificate.Subject), certificate.NotBefore, certificate.NotAfter);
+                certificate.FriendlyName = CertUtil.GetCertFriendlyName(CertUtil.ExtractCommondName(certificate.Subject), certificate.NotBefore, certificate.NotAfter);
                 StatusMsg(certificate.FriendlyName);
 
                 StatusMsg("Common Name: " + certificate.SubjectName.Name);
