@@ -1,8 +1,14 @@
 ﻿using ACMEClientLib;
+using ACMEClientLib.Crypto;
 using Org.BouncyCastle.Asn1;
+using Org.BouncyCastle.Crypto.Digests;
+using Org.BouncyCastle.Pkcs;
+using Org.BouncyCastle.Security;
+using Org.BouncyCastle.Utilities.IO.Pem;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
@@ -77,11 +83,103 @@ namespace IISUtilLib
             X509Certificate2 certificate = new X509Certificate2(PFXFileName, PFXPassword, flags);
 
             retVal.FriendlyName = certificate.FriendlyName;
-            retVal.Hash.MD5 = ByteArrayToHexString(certificate.GetCertHash());
-            retVal.CommonName = CertUtil.ExtractCommondName(certificate.Subject);
+            retVal.Hash.SHA1 = ByteArrayToHexString(certificate.GetCertHash());
+            retVal.CommonName = CertUtil.ExtractCommonName(certificate.Subject);
             retVal.NotAfter = certificate.NotAfter.ToUniversalTime();
             retVal.NotBefore = certificate.NotBefore.ToUniversalTime();   
             retVal.Subject = certificate.Subject;
+            retVal.Issuer = certificate.GetIssuerName();
+
+            /*
+            using (var fs = new FileStream(PFXFileName, FileMode.Open))
+            {
+                fs.Seek(0, SeekOrigin.Begin);
+                StatusMsg($"hello world {fs.Length}");
+
+
+                Pkcs12Store cert = new Pkcs12Store(fs, PFXPassword.ToCharArray());
+
+                
+                foreach (object a in cert.Aliases)
+                {
+                    String alias = (String)a;
+
+                   
+                    X509CertificateEntry[] ces = cert.GetCertificateChain(alias);
+                    StatusMsg($"{alias}: {ces.Length}");
+
+                    foreach (X509CertificateEntry ce in ces)
+                    {
+                        byte[] hashBytes;
+                        byte[] result;
+                        byte[] input;
+                        // Use input string to calculate MD5 hash
+                        using (System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create())
+                        {
+                            input = ce.Certificate.GetEncoded();
+
+                            MD5Digest d = new MD5Digest();
+                            result = new byte[d.GetDigestSize()];
+                            d.BlockUpdate(input, 0, input.Length);
+                            d.DoFinal(result, 0);
+                            hashBytes = md5.ComputeHash(result);
+                        }
+
+                        //ce.Certificate.
+                        StatusMsg(ce.Certificate.GetBasicConstraints().ToString());
+                        StatusMsg(CertUtil.ExtractCommonName(ce.Certificate.SubjectDN.ToString()));
+                        StatusMsg($"  ->{ce.Certificate.SubjectDN.ToString()}  SHA_256:{ByteArrayToHexString(DigestUtilities.CalculateDigest("SHA_512", ce.Certificate.CertificateStructure.ToAsn1Object().GetEncoded()))}");
+                        StatusMsg($"  ->{ce.Certificate.SubjectDN.ToString()}  {ByteArrayToHexString(hashBytes)}");
+                        StatusMsg($"  ->{ce.Certificate.SubjectDN.ToString()}  {ByteArrayToHexString(result)}");
+
+                        Sha256Digest d256 = new Sha256Digest();
+                        d256.BlockUpdate(input, 0, input.Length);
+                        result = new byte[d256.GetDigestSize()];
+                        d256.DoFinal(result, 0);
+                        StatusMsg($"  ->{ce.Certificate.SubjectDN.ToString()}  {ByteArrayToHexString(result)}");
+
+                        Sha1Digest d1 = new Sha1Digest();
+                        d1.BlockUpdate(input, 0, input.Length);
+                        result = new byte[d1.GetDigestSize()];
+                        d1.DoFinal(result, 0);
+                        StatusMsg($"  ->{ce.Certificate.SubjectDN.ToString()}  {ByteArrayToHexString(result)}");
+
+                    }
+
+
+
+                }
+
+                //tatusMsg(cert.SubjectDN.ToString());
+                //StatusMsg(cert.NotAfter.ToUniversalTime().ToString());
+                //StatusMsg(CertUtil.GetCertFriendlyName(CertUtil.ExtractCommonName(cert.NotAfter.ToUniversalTime().ToString()), cert.NotBefore, cert.NotAfter));
+
+
+
+                //m.CopyTo(fs);
+            }
+
+            StatusMsg("hello world");
+            String fileName = "D:\\Debug\\Certs\\star.burgstaler.com.crt";
+            fileName = "D:\\Debug\\Certs\\star.burgstaler.com.nopass.hack.pem";
+            using (var fs = new FileStream(fileName, FileMode.Open))
+            {
+                fs.Seek(0, SeekOrigin.Begin);
+                StatusMsg($"hello world {fs.Length}");
+
+
+                Org.BouncyCastle.X509.X509Certificate cert = CertHelper.ImportCertificate(EncodingFormat.PEM, fs);
+                StatusMsg(cert.SubjectDN.ToString());
+                //StatusMsg("Basic constraints: "+cert.GetBasicConstraints().);
+                StatusMsg(cert.NotAfter.ToUniversalTime().ToString());
+                StatusMsg(CertUtil.GetCertFriendlyName(CertUtil.ExtractCommonName(cert.NotAfter.ToUniversalTime().ToString()), cert.NotBefore, cert.NotAfter));
+
+             
+
+                //m.CopyTo(fs);
+            }
+			*/
+
             return retVal;
         }
 
@@ -155,10 +253,13 @@ namespace IISUtilLib
         public String Subject { get; set; } = "";
         public DateTime NotBefore { get; set; }
         public DateTime NotAfter { get; set; }
+        public String Issuer { get; set; } = "";
     }
 
     public class CertHash
     {
         public String MD5 { get; set; } = "";
+        public String SHA1 { get; set; } = "";
+        public String SHA256 { get; set; } = "";
     }
 }
