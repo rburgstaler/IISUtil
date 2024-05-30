@@ -71,114 +71,48 @@ namespace IISUtilLib
             (new SSLCertificates()).PrintOutAllCerts(msgOutput);
         }
 
+        public static void UpdateCertInfo(String alias,  List<Org.BouncyCastle.X509.X509Certificate> certs, CertInfo ci)
+        {
+            foreach (Org.BouncyCastle.X509.X509Certificate c in certs)
+            {
+                if (c.GetBasicConstraints() == -1)
+                {
+                    ci.FriendlyName = alias;
+                    ci.Hash.SHA1 = ByteArrayToHexString(DigestUtilities.CalculateDigest("SHA_1", c.GetEncoded()));
+                    ci.Hash.SHA256 = ByteArrayToHexString(DigestUtilities.CalculateDigest("SHA_256", c.GetEncoded()));
+                    ci.Hash.MD5 = ByteArrayToHexString(DigestUtilities.CalculateDigest("MD5", c.GetEncoded()));
+                    ci.CommonName = CertUtil.ExtractCommonName(c.SubjectDN.ToString());
+                    ci.NotAfter = c.NotAfter.ToUniversalTime();
+                    ci.NotBefore = c.NotBefore.ToUniversalTime();
+                    ci.Subject = c.SubjectDN.ToString();
+                    ci.Issuer = c.IssuerDN.ToString();
+                    break;
+                }
+            }
+
+        }
+
 
         //A good default for certificateStore is WebHosting
         public static CertInfo GetCertInfo(string PFXFileName, string PFXPassword, Action<string> StatusMsg)
         {
             CertInfo retVal = new CertInfo();
-
-            // See http://paulstovell.com/blog/x509certificate2
-            X509KeyStorageFlags flags = X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet;
-            flags |= X509KeyStorageFlags.Exportable;
-            X509Certificate2 certificate = new X509Certificate2(PFXFileName, PFXPassword, flags);
-
-            retVal.FriendlyName = certificate.FriendlyName;
-            retVal.Hash.SHA1 = ByteArrayToHexString(certificate.GetCertHash());
-            retVal.CommonName = CertUtil.ExtractCommonName(certificate.Subject);
-            retVal.NotAfter = certificate.NotAfter.ToUniversalTime();
-            retVal.NotBefore = certificate.NotBefore.ToUniversalTime();   
-            retVal.Subject = certificate.Subject;
-            retVal.Issuer = certificate.GetIssuerName();
-
-            /*
+            String alias = "";
+            List<Org.BouncyCastle.X509.X509Certificate> certs = new List<Org.BouncyCastle.X509.X509Certificate>();
             using (var fs = new FileStream(PFXFileName, FileMode.Open))
             {
                 fs.Seek(0, SeekOrigin.Begin);
-                StatusMsg($"hello world {fs.Length}");
-
-
                 Pkcs12Store cert = new Pkcs12Store(fs, PFXPassword.ToCharArray());
 
-                
                 foreach (object a in cert.Aliases)
                 {
-                    String alias = (String)a;
-
-                   
+                    alias = (String)a;
                     X509CertificateEntry[] ces = cert.GetCertificateChain(alias);
-                    StatusMsg($"{alias}: {ces.Length}");
-
-                    foreach (X509CertificateEntry ce in ces)
-                    {
-                        byte[] hashBytes;
-                        byte[] result;
-                        byte[] input;
-                        // Use input string to calculate MD5 hash
-                        using (System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create())
-                        {
-                            input = ce.Certificate.GetEncoded();
-
-                            MD5Digest d = new MD5Digest();
-                            result = new byte[d.GetDigestSize()];
-                            d.BlockUpdate(input, 0, input.Length);
-                            d.DoFinal(result, 0);
-                            hashBytes = md5.ComputeHash(result);
-                        }
-
-                        //ce.Certificate.
-                        StatusMsg(ce.Certificate.GetBasicConstraints().ToString());
-                        StatusMsg(CertUtil.ExtractCommonName(ce.Certificate.SubjectDN.ToString()));
-                        StatusMsg($"  ->{ce.Certificate.SubjectDN.ToString()}  SHA_256:{ByteArrayToHexString(DigestUtilities.CalculateDigest("SHA_512", ce.Certificate.CertificateStructure.ToAsn1Object().GetEncoded()))}");
-                        StatusMsg($"  ->{ce.Certificate.SubjectDN.ToString()}  {ByteArrayToHexString(hashBytes)}");
-                        StatusMsg($"  ->{ce.Certificate.SubjectDN.ToString()}  {ByteArrayToHexString(result)}");
-
-                        Sha256Digest d256 = new Sha256Digest();
-                        d256.BlockUpdate(input, 0, input.Length);
-                        result = new byte[d256.GetDigestSize()];
-                        d256.DoFinal(result, 0);
-                        StatusMsg($"  ->{ce.Certificate.SubjectDN.ToString()}  {ByteArrayToHexString(result)}");
-
-                        Sha1Digest d1 = new Sha1Digest();
-                        d1.BlockUpdate(input, 0, input.Length);
-                        result = new byte[d1.GetDigestSize()];
-                        d1.DoFinal(result, 0);
-                        StatusMsg($"  ->{ce.Certificate.SubjectDN.ToString()}  {ByteArrayToHexString(result)}");
-
-                    }
-
-
-
+                    foreach (X509CertificateEntry ce in ces) certs.Add(ce.Certificate);
+                    break;
                 }
-
-                //tatusMsg(cert.SubjectDN.ToString());
-                //StatusMsg(cert.NotAfter.ToUniversalTime().ToString());
-                //StatusMsg(CertUtil.GetCertFriendlyName(CertUtil.ExtractCommonName(cert.NotAfter.ToUniversalTime().ToString()), cert.NotBefore, cert.NotAfter));
-
-
-
-                //m.CopyTo(fs);
             }
-
-            StatusMsg("hello world");
-            String fileName = "D:\\Debug\\Certs\\star.burgstaler.com.crt";
-            fileName = "D:\\Debug\\Certs\\star.burgstaler.com.nopass.hack.pem";
-            using (var fs = new FileStream(fileName, FileMode.Open))
-            {
-                fs.Seek(0, SeekOrigin.Begin);
-                StatusMsg($"hello world {fs.Length}");
-
-
-                Org.BouncyCastle.X509.X509Certificate cert = CertHelper.ImportCertificate(EncodingFormat.PEM, fs);
-                StatusMsg(cert.SubjectDN.ToString());
-                //StatusMsg("Basic constraints: "+cert.GetBasicConstraints().);
-                StatusMsg(cert.NotAfter.ToUniversalTime().ToString());
-                StatusMsg(CertUtil.GetCertFriendlyName(CertUtil.ExtractCommonName(cert.NotAfter.ToUniversalTime().ToString()), cert.NotBefore, cert.NotAfter));
-
-             
-
-                //m.CopyTo(fs);
-            }
-			*/
+            UpdateCertInfo(alias, certs, retVal);
 
             return retVal;
         }
