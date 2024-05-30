@@ -2,6 +2,7 @@
 using ACMEClientLib.Crypto;
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Crypto.Digests;
+using Org.BouncyCastle.OpenSsl;
 using Org.BouncyCastle.Pkcs;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Utilities.IO.Pem;
@@ -94,23 +95,45 @@ namespace IISUtilLib
 
 
         //A good default for certificateStore is WebHosting
-        public static CertInfo GetCertInfo(string PFXFileName, string PFXPassword, Action<string> StatusMsg)
+        public static CertInfo GetCertInfo(string FileName, string Password, Action<string> StatusMsg)
         {
             CertInfo retVal = new CertInfo();
             String alias = "";
             List<Org.BouncyCastle.X509.X509Certificate> certs = new List<Org.BouncyCastle.X509.X509Certificate>();
-            using (var fs = new FileStream(PFXFileName, FileMode.Open))
+            using (var fs = new FileStream(FileName, FileMode.Open))
             {
                 fs.Seek(0, SeekOrigin.Begin);
-                Pkcs12Store cert = new Pkcs12Store(fs, PFXPassword.ToCharArray());
 
-                foreach (object a in cert.Aliases)
+                if (Path.GetExtension(FileName).ToLower() == ".pfx")
                 {
-                    alias = (String)a;
-                    X509CertificateEntry[] ces = cert.GetCertificateChain(alias);
-                    foreach (X509CertificateEntry ce in ces) certs.Add(ce.Certificate);
-                    break;
+                    Pkcs12Store cert = new Pkcs12Store(fs, Password.ToCharArray());
+                    foreach (object a in cert.Aliases)
+                    {
+                        alias = (String)a;
+                        X509CertificateEntry[] ces = cert.GetCertificateChain(alias);
+                        foreach (X509CertificateEntry ce in ces) certs.Add(ce.Certificate);
+                        break;
+                    }
                 }
+                else if (Path.GetExtension(FileName).ToLower() == ".pem")
+                {
+                    using (var tr = new StreamReader(fs))
+                    {
+                        Org.BouncyCastle.OpenSsl.PemReader pr = new Org.BouncyCastle.OpenSsl.PemReader(tr, new PasswordFinder(Password));
+
+                        Object certObj = pr.ReadObject();
+                        while (certObj != null)
+                        {
+                            if (certObj is Org.BouncyCastle.X509.X509Certificate) certs.Add(certObj as Org.BouncyCastle.X509.X509Certificate);
+                            certObj = pr.ReadObject();
+                        }
+                    }
+                }
+                else
+                {
+                    throw new Exception($"Invalid extension in file: {FileName}");
+                }
+
             }
             UpdateCertInfo(alias, certs, retVal);
 
@@ -176,6 +199,22 @@ namespace IISUtilLib
             }
             store.Close();
             return retVal;
+        }
+    }
+
+    public class PasswordFinder : IPasswordFinder
+    {
+        private string password;
+
+        public PasswordFinder(string password)
+        {
+            this.password = password;
+        }
+
+
+        public char[] GetPassword()
+        {
+            return password.ToCharArray();
         }
     }
 
