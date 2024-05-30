@@ -121,7 +121,7 @@ namespace IISUtilLib
                 // See http://paulstovell.com/blog/x509certificate2
                 certificate = new X509Certificate2(pfxFilename, PFXPassword, flags);
 
-                certificate.FriendlyName = CertUtil.GetCertFriendlyName(CertUtil.ExtractCommondName(certificate.Subject), certificate.NotBefore, certificate.NotAfter);
+                certificate.FriendlyName = CertUtil.GetCertFriendlyName(CertUtil.ExtractCommonName(certificate.Subject), certificate.NotBefore, certificate.NotAfter);
                 StatusMsg(certificate.FriendlyName);
 
                 StatusMsg("Common Name: " + certificate.SubjectName.Name);
