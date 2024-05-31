@@ -11,7 +11,11 @@ In order to get ACME wildcard cert fetches working properly with this app.  You 
 
 
 Get information about the *.pem file or *.pfx file.  File extension will be used to determine the type.
-`IISUtil.exe /GetCertInfoFileName D:\Debug\MyCert.pfx /GetCertInfoPassword MyPassword`
+```
+IISUtil.exe /GetCertInfoFileName D:\Debug\MyCert.pfx /GetCertInfoPassword MyPassword
+```
 
 In IIS, update all certs that have a corresponding binding match to the DNSQuery wild card DNS.  ie. *.commonname.com would match test.commonname.com and hello.commonname.com but not sub1.sub2.commonname.com.
-`IISUtilCmd.exe /UpdateBindingCert "WebHosting\jljkadSHA1Match" /DNSQuery "*.commonname.com"`
+```
+IISUtilCmd.exe /UpdateBindingCert "WebHosting\jljkadSHA1Match" /DNSQuery "*.commonname.com"
+```
